@@ -1,4 +1,4 @@
-#include <myint.h>
+#include <hime.h>
 
 MyInt::MyInt(int num)
 :num_(num)

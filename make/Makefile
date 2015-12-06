@@ -17,8 +17,8 @@ ifeq ($(UNAME),Darwin)
 endif
 
 CXXFLAGS = -g -Wall
-SRCS    = $(SRC_DIR)/myint.cpp
-TARGET = $(LIB_DIR)/libmyint.a
+SRCS    = $(SRC_DIR)/hime.cpp
+TARGET = $(LIB_DIR)/libhime.a
 OBJS  = $(addprefix $(OBJ_DIR)/, $(notdir $(SRCS:.cpp=.o)))
 
 default: $(TARGET)
@@ -33,11 +33,11 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) $(INCS) -o $@ -c $<
 
 
-TEST_SRCS = $(TEST_DIR)/gtest_myint.cpp
-TEST_TARGET = $(BIN_DIR)/gtest_myint
+TEST_SRCS = $(TEST_DIR)/gtest_hime.cpp
+TEST_TARGET = $(BIN_DIR)/gtest_hime
 TEST_OBJS  = $(addprefix $(OBJ_DIR)/, $(notdir $(TEST_SRCS:.cpp=.o)))
 LIBS += -L$(LIB_DIR)
-LIBS += -lmyint
+LIBS += -lhime
 
 CPPFLAGS += -isystem $(GTEST_DIR)/include
 CXXFLAGS = -g -Wall -Wextra -pthread
