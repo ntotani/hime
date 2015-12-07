@@ -1,10 +1,14 @@
+#include <random>
+
 #include "gtest/gtest.h"
 #include "hime/piece.h"
+#include "hime/session.h"
 
 using hime::MasterPiece;
 using hime::OwnedPiece;
 using hime::SessionPiece;
 using hime::Skill;
+using hime::Session;
 using hime::Planet;
 
 namespace {
@@ -25,6 +29,15 @@ TEST_F(PieceTest, construct) {
   EXPECT_EQ(60, op.master_.power_);
   SessionPiece sp(op, 1, 0, 0, 0);
   EXPECT_EQ(1, sp.id_);
+}
+
+class SessionTest : public ::testing::Test{};
+
+TEST_F(SessionTest, apply) {
+  std::mt19937 rnd(0);
+  Session s(1, [&rnd] { return rnd(); });
+  s.apply();
+  EXPECT_EQ(-1937831252, s.getState());
 }
 
 }  // namespace
