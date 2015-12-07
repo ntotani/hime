@@ -2,6 +2,7 @@
 *.slo
 *.lo
 *.o
+*.d
 *.obj
 
 # Precompiled Headers
@@ -27,5 +28,5 @@
 *.out
 *.app
 
-bin/
+build/bin/
 

@@ -1,5 +1,5 @@
-#ifndef HIME_PIECE_H_
-#define HIME_PIECE_H_
+#ifndef INCLUDE_HIME_PIECE_H_
+#define INCLUDE_HIME_PIECE_H_
 
 #include <string>
 
@@ -30,5 +30,5 @@ class MasterPiece {
 
 NS_HIME_END
 
-#endif  // HIME_PIECE_H_
+#endif  // INCLUDE_HIME_PIECE_H_
 

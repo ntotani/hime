@@ -1,5 +1,5 @@
-#ifndef HIME_HIME_H_
-#define HIME_HIME_H_
+#ifndef INCLUDE_HIME_HIME_H_
+#define INCLUDE_HIME_HIME_H_
 
 class MyInt {
  public:
@@ -17,5 +17,5 @@ class MyInt {
   TypeName(const TypeName&);               \
   void operator=(const TypeName&)
 
-#endif  // HIME_HIME_H_
+#endif  // INCLUDE_HIME_HIME_H_
 
