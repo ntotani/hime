@@ -1,29 +1,16 @@
 #include "gtest/gtest.h"
-#include "hime.h"
+#include "hime/piece.h"
+
+using hime::MasterPiece;
 
 namespace {
 
 class MyIntTest : public ::testing::Test{};
 
-TEST_F(MyIntTest, isOdd)
-{
-  MyInt mi1 = MyInt(10);
-  EXPECT_EQ(false, mi1.isOdd());
-
-  MyInt mi2 = MyInt(13);
-  EXPECT_EQ(true, mi2.isOdd());
+TEST_F(MyIntTest, isOdd) {
+    MasterPiece mp(1, "姫", 60, 50, 80, 2);
+    EXPECT_EQ(1, mp.id_);
 }
 
-
-TEST_F(MyIntTest, isEven)
-{
-  MyInt mi1 = MyInt(10);
-  EXPECT_EQ(true, mi1.isEven());
-
-  MyInt mi2 = MyInt(13);
-  EXPECT_EQ(false, mi2.isEven());
-}
-
-} // namespace
-
+}  // namespace
 

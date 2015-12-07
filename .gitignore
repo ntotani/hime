@@ -28,5 +28,4 @@
 *.app
 
 bin/
-lib/
-make/obj/
+

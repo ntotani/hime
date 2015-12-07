@@ -1,10 +1,10 @@
-SRC_DIR=../src
-INC_DIR=../include
-TEST_DIR=../test
-LIB_DIR=../lib
-BIN_DIR=../bin
-OBJ_DIR=./obj
-GTEST_DIR=../extsrc/gtest-1.7.0
+SRC_DIR   = ./hime
+INC_DIR   = ./
+TEST_DIR  = ./test
+LIB_DIR   = ./lib
+BIN_DIR   = ./bin
+OBJ_DIR   = ./obj
+GTEST_DIR = ./extsrc/gtest-1.7.0
 
 INCS += -I$(INC_DIR)
 
@@ -17,9 +17,9 @@ ifeq ($(UNAME),Darwin)
 endif
 
 CXXFLAGS = -g -Wall
-SRCS    = $(SRC_DIR)/hime.cpp
-TARGET = $(LIB_DIR)/libhime.a
-OBJS  = $(addprefix $(OBJ_DIR)/, $(notdir $(SRCS:.cpp=.o)))
+SRCS     = $(shell find $(SRC_DIR) -name '*.cpp')
+TARGET   = $(LIB_DIR)/libhime.a
+OBJS     = $(addprefix $(OBJ_DIR)/, $(notdir $(SRCS:.cpp=.o)))
 
 default: $(TARGET)
 .PHONY: default
@@ -82,3 +82,4 @@ $(OBJ_DIR)/%.o: $(TEST_DIR)/%.cpp $(GTEST_HEADERS)
 
 clean:
 	rm -f $(TARGET) $(TEST_TARGET) $(OBJS) $(TEST_OBJS)
+
