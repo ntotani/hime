@@ -2,7 +2,8 @@
 #include "hime/piece.h"
 
 using hime::MasterPiece;
-using hime::StorePiece;
+using hime::OwnedPiece;
+using hime::SessionPiece;
 using hime::Skill;
 using hime::Planet;
 
@@ -20,8 +21,10 @@ TEST_F(PieceTest, construct) {
   MasterPiece mp("1", "姫", Planet::kSun, activeSkill, passiveSkill,
       60, 50, 80);
   EXPECT_EQ("1", mp.id_);
-  StorePiece sp(mp);
-  EXPECT_EQ(60, sp.master_.power_);
+  OwnedPiece op(mp);
+  EXPECT_EQ(60, op.master_.power_);
+  SessionPiece sp(op, 1, 0, 0, 0);
+  EXPECT_EQ(1, sp.id_);
 }
 
 }  // namespace
