@@ -1,5 +1,3 @@
-#include <random>
-
 #include "gtest/gtest.h"
 #include "hime/piece.h"
 #include "hime/session.h"
@@ -9,6 +7,8 @@ using hime::OwnedPiece;
 using hime::SessionPiece;
 using hime::Skill;
 using hime::Session;
+using hime::SessionContext;
+using hime::SessionContextImpl;
 using hime::Planet;
 
 namespace {
@@ -34,9 +34,9 @@ TEST_F(PieceTest, construct) {
 class SessionTest : public ::testing::Test{};
 
 TEST_F(SessionTest, apply) {
-  std::mt19937 rnd(0);
-  Session s(1, [&rnd] { return rnd(); });
-  s.apply();
+  SessionContextImpl ctx(0);
+  Session s(1, &ctx);
+  s.applyAction();
   EXPECT_EQ(-1937831252, s.getState());
 }
 
