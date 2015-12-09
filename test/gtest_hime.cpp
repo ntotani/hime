@@ -36,6 +36,8 @@ TEST_F(PieceTest, construct) {
   SessionContextImpl ctx(0);
   vector<vector<const OwnedPiece*>> pieces = {{&op}};
   Session s(&ctx, 2, 1, 1, pieces);
+  EXPECT_EQ(hime::Tile::kNone, s.board().tiles()[0][0]);
+  EXPECT_EQ(hime::Card::kFront, s.decks()[0][0]);
 }
 
 }  // namespace
