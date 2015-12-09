@@ -3,8 +3,11 @@
 
 #include <functional>
 #include <random>
+#include <string>
+#include <utility>
+#include <vector>
 
-#include "hime/hime.h"
+#include "hime/piece.h"
 
 NS_HIME_BEGIN
 
@@ -26,14 +29,16 @@ class SessionContextImpl : public SessionContext {
 class Session {
  public:
   const int player_num_;
-  Session(int player_num, SessionContext *context)
-      :player_num_(player_num), context_(*context) {
-  }
-  void applyAction();
-  inline int getState() const { return state_; }
+  const std::vector<std::vector<OwnedPiece*>> owned_pieces_;
+  Session(SessionContext *context, int player_num, int board_id, int deck_id,
+      const std::vector<std::vector<OwnedPiece*>> &pieces);
+  bool CommitFormation(
+      const std::vector<std::pair<std::string, Point>> &formation);
  private:
   SessionContext &context_;
-  int state_;
+  std::vector<std::vector<Tile>> board_;
+  std::vector<SessionPiece*> pieces_;
+  std::vector<std::vector<Card>> decks_;
   DISALLOW_COPY_AND_ASSIGN(Session);
 };
 

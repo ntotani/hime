@@ -12,7 +12,7 @@
 
 NS_HIME_BEGIN
 
-enum Planet {
+enum class Planet {
   kSun = 0,
   kMoon,
   kMars,
@@ -22,7 +22,7 @@ enum Planet {
   kSaturn,
 };
 
-enum PieceAction {
+enum class PieceAction {
   kPhysical = 0,
   kMagical,
   kHeal,
@@ -40,6 +40,32 @@ class Skill {
   }
  private:
   DISALLOW_COPY_AND_ASSIGN(Skill);
+};
+
+enum class Tile {
+  kNone = 0,
+  kNormal,
+  kEvolution,
+};
+
+enum class Card {
+  kFront = 0,
+  kFrontR,
+  kFrontL,
+  kBackR,
+  kBackL,
+  kBack,
+  kFrontFront,
+  kFrontRFrontR,
+  kFrontLFrontL,
+  kFrontFrontR,
+  kFrontFrontL,
+  kSkill,
+};
+
+struct Point {
+  const int i, j;
+  Point(int i, int j):i(i), j(j) {}
 };
 
 NS_HIME_END

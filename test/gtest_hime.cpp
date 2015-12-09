@@ -1,7 +1,11 @@
+#include <vector>
+
 #include "gtest/gtest.h"
+
 #include "hime/piece.h"
 #include "hime/session.h"
 
+using std::vector;
 using hime::MasterPiece;
 using hime::OwnedPiece;
 using hime::SessionPiece;
@@ -25,19 +29,13 @@ TEST_F(PieceTest, construct) {
   MasterPiece mp("1", "姫", Planet::kSun, activeSkill, passiveSkill,
       60, 50, 80);
   EXPECT_EQ("1", mp.id_);
-  OwnedPiece op(mp);
+  OwnedPiece op(mp, "a");
   EXPECT_EQ(60, op.master_.power_);
-  SessionPiece sp(op, 1, 0, 0, 0);
+  SessionPiece sp(op, 1, 0, {0, 0});
   EXPECT_EQ(1, sp.id_);
-}
-
-class SessionTest : public ::testing::Test{};
-
-TEST_F(SessionTest, apply) {
   SessionContextImpl ctx(0);
-  Session s(1, &ctx);
-  s.applyAction();
-  EXPECT_EQ(-1937831252, s.getState());
+  vector<vector<OwnedPiece*>> pieces = {{&op}};
+  Session s(&ctx, 2, 1, 1, pieces);
 }
 
 }  // namespace

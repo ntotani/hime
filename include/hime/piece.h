@@ -2,6 +2,7 @@
 #define INCLUDE_HIME_PIECE_H_
 
 #include <string>
+#include <utility>
 
 #include "hime/hime.h"
 
@@ -36,7 +37,9 @@ class MasterPiece {
 class OwnedPiece {
  public:
   const MasterPiece &master_;
-  explicit OwnedPiece(const MasterPiece &master):master_(master) {
+  const std::string id_;
+  OwnedPiece(const MasterPiece &master, const std::string &id)
+      :master_(master), id_(id) {
   }
  private:
   DISALLOW_COPY_AND_ASSIGN(OwnedPiece);
@@ -45,15 +48,14 @@ class OwnedPiece {
 class SessionPiece {
  public:
   const OwnedPiece &owned_;
-  int id_;
-  SessionPiece(const OwnedPiece &owned, int id, int team, int i, int j)
-      :owned_(owned), id_(id), team_(team), i_(i), j_(j), hp_(100),
+  const int id_;
+  SessionPiece(const OwnedPiece &owned, int id, int team, Point position)
+      :owned_(owned), id_(id), team_(team), position_(position), hp_(100),
       pump_power_(1.0), pump_defense_(1.0), pump_resist_(1.0) {
   }
  private:
   int team_;
-  int i_;
-  int j_;
+  Point position_;
   int hp_;
   float pump_power_;
   float pump_defense_;
