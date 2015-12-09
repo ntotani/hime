@@ -34,7 +34,7 @@ TEST_F(PieceTest, construct) {
   SessionPiece sp(op, 1, 0, {0, 0});
   EXPECT_EQ(1, sp.id_);
   SessionContextImpl ctx(0);
-  vector<vector<OwnedPiece*>> pieces = {{&op}};
+  vector<vector<const OwnedPiece*>> pieces = {{&op}};
   Session s(&ctx, 2, 1, 1, pieces);
 }
 

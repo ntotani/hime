@@ -29,9 +29,9 @@ class SessionContextImpl : public SessionContext {
 class Session {
  public:
   const int player_num_;
-  const std::vector<std::vector<OwnedPiece*>> owned_pieces_;
+  const std::vector<std::vector<const OwnedPiece*>> owned_pieces_;
   Session(SessionContext *context, int player_num, int board_id, int deck_id,
-      const std::vector<std::vector<OwnedPiece*>> &pieces);
+      const std::vector<std::vector<const OwnedPiece*>> &pieces);
   bool CommitFormation(
       const std::vector<std::pair<std::string, Point>> &formation);
  private:

@@ -11,7 +11,7 @@ using std::vector;
 NS_HIME_BEGIN
 
 Session::Session(SessionContext *context, int player_num,
-    int board_id, int deck_id, const vector<vector<OwnedPiece*>> &pieces)
+    int board_id, int deck_id, const vector<vector<const OwnedPiece*>> &pieces)
     :player_num_(player_num), owned_pieces_(pieces), context_(*context) {
   // board from id
   // deck from id
