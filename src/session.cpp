@@ -6,7 +6,9 @@
 #include <vector>
 
 using std::map;
+using std::make_unique;
 using std::pair;
+using std::shared_ptr;
 using std::string;
 using std::unique_ptr;
 using std::vector;
@@ -14,7 +16,8 @@ using std::vector;
 NS_HIME_BEGIN
 
 Session::Session(unique_ptr<SessionContext> context, int player_num,
-    int board_id, int deck_id, const vector<vector<const OwnedPiece*>> &pieces)
+    int board_id, int deck_id,
+    const vector<vector<shared_ptr<const OwnedPiece>>> &pieces)
     :player_num_(player_num), owned_pieces_(pieces), context_(move(context)),
     board_(board_id) {
   switch (deck_id) {
@@ -43,7 +46,7 @@ bool Session::CommitFormation(const map<string, Point> &formation) {
   for (auto &pieces : owned_pieces_) {
     for (auto e : pieces) {
       if (formation.find(e->id_) != formation.end()) {
-        pieces_.emplace_back(new SessionPiece(*e, ++piece_id, team_id,
+        pieces_.push_back(make_unique<SessionPiece>(e, ++piece_id, team_id,
               formation.at(e->id_)));
       }
     }

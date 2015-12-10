@@ -13,13 +13,14 @@ class MasterPiece {
   const std::string id_;
   const std::string name_;
   const Planet planet_;
-  const Skill &active_skill_;
-  const Skill &passive_skill_;
+  const std::shared_ptr<const Skill> active_skill_;
+  const std::shared_ptr<const Skill> passive_skill_;
   const int power_;
   const int defense_;
   const int resist_;
   MasterPiece(const std::string &id, const std::string &name, Planet planet,
-      const Skill &active_skill, const Skill &passive_skill,
+      std::shared_ptr<const Skill> active_skill,
+      std::shared_ptr<const Skill> passive_skill,
       int power, int defense, int resist)
       :id_(id),
       name_(name),
@@ -30,15 +31,16 @@ class MasterPiece {
       defense_(defense),
       resist_(resist) {
   }
+
  private:
   DISALLOW_COPY_AND_ASSIGN(MasterPiece);
 };
 
 class OwnedPiece {
  public:
-  const MasterPiece &master_;
+  const std::shared_ptr<const MasterPiece> master_;
   const std::string id_;
-  OwnedPiece(const MasterPiece &master, const std::string &id)
+  OwnedPiece(std::shared_ptr<const MasterPiece> master, const std::string &id)
       :master_(master), id_(id) {
   }
  private:
@@ -47,9 +49,10 @@ class OwnedPiece {
 
 class SessionPiece {
  public:
-  const OwnedPiece &owned_;
+  const std::shared_ptr<const OwnedPiece> owned_;
   const int id_;
-  SessionPiece(const OwnedPiece &owned, int id, int team, Point position)
+  SessionPiece(std::shared_ptr<const OwnedPiece> owned,
+      int id, int team, Point position)
       :owned_(owned), id_(id), team_(team), position_(position), hp_(100),
       pump_power_(1.0), pump_defense_(1.0), pump_resist_(1.0) {
   }

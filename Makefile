@@ -16,7 +16,7 @@ UNAME := $(shell uname -s)
 ifeq ($(UNAME),Darwin)
 		CXX=/usr/bin/clang++
 endif
-CXXFLAGS = -g -MMD -MP -Wall -Wextra -pthread -std=c++11
+CXXFLAGS = -g -MMD -MP -Wall -Wextra -pthread -std=c++1y
 INCS += -I$(INC_DIR)
 
 SRCS     = $(shell find $(SRC_DIR) -name '*.cpp')
