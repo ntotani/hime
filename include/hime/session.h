@@ -2,6 +2,7 @@
 #define INCLUDE_HIME_SESSION_H_
 
 #include <functional>
+#include <map>
 #include <random>
 #include <string>
 #include <utility>
@@ -31,16 +32,17 @@ class Session {
  public:
   const int player_num_;
   const std::vector<std::vector<const OwnedPiece*>> owned_pieces_;
-  Session(SessionContext *context, int player_num, int board_id, int deck_id,
+  Session(std::unique_ptr<SessionContext> context, int player_num,
+      int board_id, int deck_id,
       const std::vector<std::vector<const OwnedPiece*>> &pieces);
   bool CommitFormation(
-      const std::vector<std::pair<std::string, Point>> &formation);
+      const std::map<std::string, Point> &formation);
   inline const Board &board() const { return board_; }
   inline const std::vector<std::vector<Card>> &decks() const { return decks_; }
  private:
-  SessionContext &context_;
+  std::unique_ptr<SessionContext> context_;
   Board board_;
-  std::vector<SessionPiece*> pieces_;
+  std::vector<std::unique_ptr<SessionPiece>> pieces_;
   std::vector<std::vector<Card>> decks_;
   DISALLOW_COPY_AND_ASSIGN(Session);
 };

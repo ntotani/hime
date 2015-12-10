@@ -5,6 +5,7 @@
 #include "hime/piece.h"
 #include "hime/session.h"
 
+using std::unique_ptr;
 using std::vector;
 using hime::MasterPiece;
 using hime::OwnedPiece;
@@ -33,9 +34,9 @@ TEST_F(PieceTest, construct) {
   EXPECT_EQ(60, op.master_.power_);
   SessionPiece sp(op, 1, 0, {0, 0});
   EXPECT_EQ(1, sp.id_);
-  SessionContextImpl ctx(0);
+  auto ctx = new SessionContextImpl(0);
   vector<vector<const OwnedPiece*>> pieces = {{&op}};
-  Session s(&ctx, 2, 1, 1, pieces);
+  Session s(unique_ptr<SessionContextImpl>(ctx), 2, 1, 1, pieces);
   EXPECT_EQ(hime::Tile::kNone, s.board().tiles()[0][0]);
   EXPECT_EQ(hime::Card::kFront, s.decks()[0][0]);
 }

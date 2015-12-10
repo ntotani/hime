@@ -1,18 +1,21 @@
 #include "hime/session.h"
 
+#include <map>
 #include <string>
 #include <utility>
 #include <vector>
 
+using std::map;
 using std::pair;
 using std::string;
+using std::unique_ptr;
 using std::vector;
 
 NS_HIME_BEGIN
 
-Session::Session(SessionContext *context, int player_num,
+Session::Session(unique_ptr<SessionContext> context, int player_num,
     int board_id, int deck_id, const vector<vector<const OwnedPiece*>> &pieces)
-    :player_num_(player_num), owned_pieces_(pieces), context_(*context),
+    :player_num_(player_num), owned_pieces_(pieces), context_(move(context)),
     board_(board_id) {
   switch (deck_id) {
     default:
@@ -34,7 +37,18 @@ Session::Session(SessionContext *context, int player_num,
   }
 }
 
-bool Session::CommitFormation(const vector<pair<string, Point>> &formation) {
+bool Session::CommitFormation(const map<string, Point> &formation) {
+  int team_id = 0;
+  int piece_id = 0;
+  for (auto &pieces : owned_pieces_) {
+    for (auto e : pieces) {
+      if (formation.find(e->id_) != formation.end()) {
+        pieces_.emplace_back(new SessionPiece(*e, ++piece_id, team_id,
+              formation.at(e->id_)));
+      }
+    }
+    ++team_id;
+  }
   return false;
 }
 
