@@ -1,11 +1,10 @@
 #include "hime/session.h"
 
-#include <map>
 #include <string>
 #include <utility>
 #include <vector>
 
-using std::map;
+using std::unordered_map;
 using std::make_unique;
 using std::pair;
 using std::shared_ptr;
@@ -40,7 +39,7 @@ Session::Session(unique_ptr<SessionContext> context, int player_num,
   }
 }
 
-bool Session::CommitFormation(const map<string, Point> &formation) {
+bool Session::CommitFormation(const unordered_map<string, Point> &formation) {
   int team_id = 0;
   int piece_id = 0;
   for (auto &pieces : owned_pieces_) {

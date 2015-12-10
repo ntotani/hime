@@ -2,9 +2,9 @@
 #define INCLUDE_HIME_SESSION_H_
 
 #include <functional>
-#include <map>
 #include <random>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -38,7 +38,7 @@ class Session {
       const std::vector<std::vector<std::shared_ptr<const OwnedPiece>>>
           &pieces);
   bool CommitFormation(
-      const std::map<std::string, Point> &formation);
+      const std::unordered_map<std::string, Point> &formation);
   inline const Board &board() const { return board_; }
   inline const std::vector<std::vector<Card>> &decks() const { return decks_; }
  private:
