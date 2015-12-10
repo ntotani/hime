@@ -34,7 +34,7 @@ $(TARGET): $(OBJS)
 	$(AR) ruc $(TARGET) $(OBJS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-	@[ -d $(OBJ_DIRS) ] || mkdir -p $(OBJ_DIRS)
+	@[ -d $(dir $@) ] || mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INCS) -o $@ -c $<
 
 
