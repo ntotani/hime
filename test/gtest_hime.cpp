@@ -30,10 +30,10 @@ TEST_F(PieceTest, construct) {
   EXPECT_EQ("1", activeSkill->id_);
   EXPECT_EQ(30, passiveSkill->rate_);
   auto mp = make_shared<const MasterPiece>("1", "姫", Planet::kSun,
-      activeSkill, passiveSkill, 60, 50, 80);
+      activeSkill, passiveSkill, hime::Parameter(60, 50, 80));
   EXPECT_EQ("1", mp->id_);
   auto op = make_shared<const OwnedPiece>(mp, "a");
-  EXPECT_EQ(60, op->master_->power_);
+  EXPECT_EQ(60, op->master_->param_.power);
   SessionPiece sp(op, 1, 0, {0, 0});
   EXPECT_EQ(1, sp.id_);
   auto ctx = new SessionContextImpl(0);

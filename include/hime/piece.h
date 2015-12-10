@@ -8,6 +8,12 @@
 
 NS_HIME_BEGIN
 
+struct Parameter {
+  const int power, defense, resist;
+  Parameter(int power, int defense, int resist)
+      :power(power), defense(defense), resist(resist) {}
+};
+
 class MasterPiece {
  public:
   const std::string id_;
@@ -15,21 +21,17 @@ class MasterPiece {
   const Planet planet_;
   const std::shared_ptr<const Skill> active_skill_;
   const std::shared_ptr<const Skill> passive_skill_;
-  const int power_;
-  const int defense_;
-  const int resist_;
+  const Parameter param_;
   MasterPiece(const std::string &id, const std::string &name, Planet planet,
       std::shared_ptr<const Skill> active_skill,
       std::shared_ptr<const Skill> passive_skill,
-      int power, int defense, int resist)
+      Parameter param)
       :id_(id),
       name_(name),
       planet_(planet),
       active_skill_(active_skill),
       passive_skill_(passive_skill),
-      power_(power),
-      defense_(defense),
-      resist_(resist) {
+      param_(param) {
   }
 
  private:
@@ -54,15 +56,13 @@ class SessionPiece {
   SessionPiece(std::shared_ptr<const OwnedPiece> owned,
       int id, int team, Point position)
       :owned_(owned), id_(id), team_(team), position_(position), hp_(100),
-      pump_power_(1.0), pump_defense_(1.0), pump_resist_(1.0) {
+      pump_(100, 100, 100) {
   }
  private:
   int team_;
   Point position_;
   int hp_;
-  float pump_power_;
-  float pump_defense_;
-  float pump_resist_;
+  Parameter pump_;
   DISALLOW_COPY_AND_ASSIGN(SessionPiece);
 };
 
