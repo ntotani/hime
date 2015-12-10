@@ -27,15 +27,15 @@ TEST_F(PieceTest, construct) {
       "1", "全体回復", "味方全員を@回復する", 30);
   auto passiveSkill = make_shared<const Skill>(
       "1", "癒やし", "周りの駒が毎ターン@ずつ回復する", 30);
-  EXPECT_EQ("1", activeSkill->id_);
-  EXPECT_EQ(30, passiveSkill->rate_);
+  EXPECT_EQ("1", activeSkill->id());
+  EXPECT_EQ(30, passiveSkill->rate());
   auto mp = make_shared<const MasterPiece>("1", "姫", Planet::kSun,
       activeSkill, passiveSkill, hime::Parameter(60, 50, 80));
-  EXPECT_EQ("1", mp->id_);
+  EXPECT_EQ("1", mp->id());
   auto op = make_shared<const OwnedPiece>(mp, "a");
-  EXPECT_EQ(60, op->master_->param_.power);
+  EXPECT_EQ(60, op->master()->param().power);
   SessionPiece sp(op, 1, 0, {0, 0});
-  EXPECT_EQ(1, sp.id_);
+  EXPECT_EQ(1, sp.id());
   auto ctx = new SessionContextImpl(0);
   vector<vector<shared_ptr<const OwnedPiece>>> pieces = {{op}};
   Session s(unique_ptr<SessionContextImpl>(ctx), 2, 1, 1, pieces);

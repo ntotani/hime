@@ -1,6 +1,7 @@
 #include "hime/session.h"
 
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -44,9 +45,9 @@ bool Session::CommitFormation(const unordered_map<string, Point> &formation) {
   int piece_id = 0;
   for (auto &pieces : owned_pieces_) {
     for (auto e : pieces) {
-      if (formation.find(e->id_) != formation.end()) {
+      if (formation.find(e->id()) != formation.end()) {
         pieces_.push_back(make_unique<SessionPiece>(e, ++piece_id, team_id,
-              formation.at(e->id_)));
+              formation.at(e->id())));
       }
     }
     ++team_id;

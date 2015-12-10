@@ -30,15 +30,20 @@ enum class PieceAction {
 
 class Skill {
  public:
-  const std::string id_;
-  const std::string name_;
-  const std::string desc_;
-  const int rate_;
   Skill(const std::string &id, const std::string &name,
       const std::string &desc, int rate)
       :id_(id), name_(name), desc_(desc), rate_(rate) {
   }
+  inline const std::string& id() const { return id_; }
+  inline const std::string& name() const { return name_; }
+  inline const std::string& desc() const { return desc_; }
+  inline int rate() const { return rate_; }
+
  private:
+  const std::string id_;
+  const std::string name_;
+  const std::string desc_;
+  const int rate_;
   DISALLOW_COPY_AND_ASSIGN(Skill);
 };
 

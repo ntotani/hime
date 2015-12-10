@@ -23,6 +23,7 @@ class SessionContextImpl : public SessionContext {
  public:
   explicit SessionContextImpl(int seed):rnd_(std::mt19937(seed)) {}
   int random() { return rnd_(); }
+
  private:
   std::mt19937 rnd_;
   DISALLOW_COPY_AND_ASSIGN(SessionContextImpl);
@@ -41,6 +42,7 @@ class Session {
       const std::unordered_map<std::string, Point> &formation);
   inline const Board &board() const { return board_; }
   inline const std::vector<std::vector<Card>> &decks() const { return decks_; }
+
  private:
   std::unique_ptr<SessionContext> context_;
   Board board_;
