@@ -90,6 +90,14 @@ $(OBJ_DIR)/%.o: $(TEST_DIR)/%.cpp $(GTEST_HEADERS)
 	@[ -d $(OBJ_DIR) ] || mkdir -p $(OBJ_DIR)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCS) -o $@ -c $<
 
+# -----------------------------------------------------------------------------
+# js bindings
+# -----------------------------------------------------------------------------
+
+js: $(TARGET) bindings/embind.cpp
+	emcc --bind -std=c++1y $(INCS) -o build/hime.js $(SRCS) bindings/embind.cpp
+.PHONY: js
+
 clean:
 	rm -rf $(BUILD_DIR)
 .PHONY: clean
