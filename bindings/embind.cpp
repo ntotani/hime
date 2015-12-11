@@ -1,8 +1,11 @@
 #include <string>
+#include <vector>
 
 #include "emscripten/bind.h"
 
 #include "hime/session.h"
+
+namespace {
 
 using std::make_shared;
 using std::make_unique;
@@ -13,8 +16,10 @@ using std::vector;
 using emscripten::base;
 using emscripten::class_;
 using emscripten::enum_;
+using emscripten::function;
 using emscripten::pure_virtual;
 using emscripten::wrapper;
+using emscripten::register_vector;
 using hime::MasterPiece;
 using hime::OwnedPiece;
 using hime::SessionPiece;
@@ -25,13 +30,6 @@ using hime::Session;
 using hime::SessionContext;
 using hime::SessionContextImpl;
 using hime::Skill;
-
-struct SessionContextWrapper : public wrapper<SessionContext> {
-    EMSCRIPTEN_WRAPPER(SessionContextWrapper);
-    int random() {
-        return call<int>("random");
-    }
-};
 
 EMSCRIPTEN_BINDINGS(hime) {
   class_<Point>("Point")
@@ -54,6 +52,9 @@ EMSCRIPTEN_BINDINGS(hime) {
       .property("name", &Skill::name)
       .property("desc", &Skill::desc)
       .property("rate", &Skill::rate);
+}
+
+EMSCRIPTEN_BINDINGS(piece) {
   class_<Parameter>("Parameter")
       .constructor<int, int, int>()
       .property("power", &Parameter::power)
@@ -75,25 +76,38 @@ EMSCRIPTEN_BINDINGS(hime) {
           shared_ptr<const MasterPiece>, const string&>)
       .property("master", &OwnedPiece::master)
       .property("id", &OwnedPiece::id);
-  /*
   class_<SessionPiece>("SessionPiece")
-      .smart_ptr_constructor("unique_ptr<SessionPiece>",
-          &make_unique<SessionPiece,
-          shared_ptr<const OwnedPiece>, int, int, Point>)
       .property("id", &SessionPiece::id);
-      */
-  class_<SessionPiece>("SessionPiece")
-      .constructor<shared_ptr<const OwnedPiece>, int, int, Point>()
-      .property("id", &SessionPiece::id);
+}
+
+struct SessionContextWrapper : public wrapper<SessionContext> {
+  EMSCRIPTEN_WRAPPER(SessionContextWrapper);
+  int random() {
+    return call<int>("random");
+  }
+};
+
+unique_ptr<Session> session_factory(int seed, int player_num,
+    int board_id, int deck_id,
+    const vector<vector<shared_ptr<const OwnedPiece>>> &pieces) {
+  return make_unique<Session>(make_unique<SessionContextImpl>(seed),
+      player_num, board_id, deck_id, pieces);
+}
+
+EMSCRIPTEN_BINDINGS(session) {
   class_<SessionContext>("SessionContext")
       .function("random", &SessionContext::random, pure_virtual())
       .allow_subclass<SessionContextWrapper>("SessionContextWrapper");
   class_<SessionContextImpl, base<SessionContext>>("SessionContextImpl")
-      .constructor<int>()
       .function("random", &SessionContextImpl::random);
-  /*
+  register_vector<shared_ptr<const OwnedPiece>>("OwnedPieceVector");
+  register_vector<vector<shared_ptr<const OwnedPiece>>>(
+      "OwnedPieceVectorVector");
   class_<Session>("Session")
-      .constructor<unique_ptr<SessionContext>, int, int, int, const vector<vector<shared_ptr<const OwnedPiece>>>&>();
-    */
+      .property("player_num", &Session::player_num)
+      .property("owned_pieces", &Session::owned_pieces);
+  function("session_factory", &session_factory);
 }
+
+}  // namespace
 
