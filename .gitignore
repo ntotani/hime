@@ -31,3 +31,8 @@
 build/bin/
 build/hime.js
 
+tools/emsdk_portable/clang/
+tools/emsdk_portable/emscripten/
+tools/emsdk_portable/node/
+tools/emsdk_portable/zips/
+
