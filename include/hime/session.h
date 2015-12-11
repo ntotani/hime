@@ -31,19 +31,24 @@ class SessionContextImpl : public SessionContext {
 
 class Session {
  public:
-  const int player_num_;
-  const std::vector<std::vector<std::shared_ptr<const OwnedPiece>>>
-      owned_pieces_;
   Session(std::unique_ptr<SessionContext> context, int player_num,
       int board_id, int deck_id,
       const std::vector<std::vector<std::shared_ptr<const OwnedPiece>>>
           &pieces);
   bool CommitFormation(
       const std::unordered_map<std::string, Point> &formation);
+  inline int player_num() const { return player_num_; }
+  inline const std::vector<std::vector<std::shared_ptr<const OwnedPiece>>>&
+      owned_pieces() const { return owned_pieces_; }
   inline const Board &board() const { return board_; }
+  inline const std::vector<std::unique_ptr<SessionPiece>>& pieces() const {
+      return pieces_; }
   inline const std::vector<std::vector<Card>> &decks() const { return decks_; }
 
  private:
+  const int player_num_;
+  const std::vector<std::vector<std::shared_ptr<const OwnedPiece>>>
+      owned_pieces_;
   std::unique_ptr<SessionContext> context_;
   Board board_;
   std::vector<std::unique_ptr<SessionPiece>> pieces_;
