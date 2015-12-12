@@ -41,6 +41,19 @@ class SessionTest : public testing::Test {
 TEST_F(SessionTest, Constructor) {
   EXPECT_EQ(hime::Tile::kNone, s_->board().tiles()[0][0]);
   EXPECT_EQ(hime::Card::kFront, s_->decks()[0][0]);
+  EXPECT_EQ(0, s_->pieces().size());
+}
+
+TEST_F(SessionTest, CommitFormation) {
+  s_->CommitFormation({{"a", {1, 1}}});
+  EXPECT_EQ(1, s_->pieces().size());
+  auto &p = s_->pieces()[0];
+  EXPECT_EQ("a", p->owned()->id());
+  EXPECT_EQ(0, p->id());
+  EXPECT_EQ(0, p->team());
+  EXPECT_EQ(1, p->position().i);
+  EXPECT_EQ(100, p->hp());
+  EXPECT_EQ(100, p->pump().power);
 }
 
 }  // namespace

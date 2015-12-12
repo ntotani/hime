@@ -67,7 +67,12 @@ class SessionPiece {
       :owned_(owned), id_(id), team_(team), position_(position), hp_(100),
       pump_(100, 100, 100) {
   }
+  inline std::shared_ptr<const OwnedPiece> owned() const { return owned_; }
   inline int id() const { return id_; }
+  inline int team() const { return team_; }
+  inline Point position() const { return position_; }
+  inline int hp() const { return hp_; }
+  inline Parameter pump() const { return pump_; }
 
  private:
   const std::shared_ptr<const OwnedPiece> owned_;

@@ -46,8 +46,9 @@ bool Session::CommitFormation(const unordered_map<string, Point> &formation) {
   for (auto &pieces : owned_pieces_) {
     for (auto e : pieces) {
       if (formation.find(e->id()) != formation.end()) {
-        pieces_.push_back(make_unique<SessionPiece>(e, ++piece_id, team_id,
+        pieces_.push_back(make_unique<SessionPiece>(e, piece_id, team_id,
               formation.at(e->id())));
+        ++piece_id;
       }
     }
     ++team_id;
