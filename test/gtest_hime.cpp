@@ -2,12 +2,11 @@
 
 #include "gtest/gtest.h"
 
-#include "hime/piece.h"
 #include "hime/session.h"
 
 using std::make_shared;
+using std::make_unique;
 using std::shared_ptr;
-using std::unique_ptr;
 using std::vector;
 using hime::MasterPiece;
 using hime::OwnedPiece;
@@ -20,27 +19,28 @@ using hime::Planet;
 
 namespace {
 
-class PieceTest : public ::testing::Test{};
+class SessionTest : public testing::Test {
+ protected:
+  virtual void SetUp() {
+    auto s1 = make_shared<const Skill>(
+        "1", "全体回復", "味方全員を@回復する", 30);
+    auto s2 = make_shared<const Skill>(
+        "1", "癒やし", "周りの駒が毎ターン@ずつ回復する", 30);
+    auto mp = make_shared<const MasterPiece>("1", "姫", Planet::kSun,
+        s1, s2, hime::Parameter(60, 50, 80));
+    auto op = make_shared<const OwnedPiece>(mp, "a");
+    vector<vector<shared_ptr<const OwnedPiece>>> pieces = {{op}};
+    s_ = new Session(make_unique<SessionContextImpl>(0), 2, 1, 1, pieces);
+  }
+  virtual void TearDown() {
+    delete s_;
+  }
+  Session* s_;
+};
 
-TEST_F(PieceTest, construct) {
-  auto activeSkill = make_shared<const Skill>(
-      "1", "全体回復", "味方全員を@回復する", 30);
-  auto passiveSkill = make_shared<const Skill>(
-      "1", "癒やし", "周りの駒が毎ターン@ずつ回復する", 30);
-  EXPECT_EQ("1", activeSkill->id());
-  EXPECT_EQ(30, passiveSkill->rate());
-  auto mp = make_shared<const MasterPiece>("1", "姫", Planet::kSun,
-      activeSkill, passiveSkill, hime::Parameter(60, 50, 80));
-  EXPECT_EQ("1", mp->id());
-  auto op = make_shared<const OwnedPiece>(mp, "a");
-  EXPECT_EQ(60, op->master()->param().power);
-  SessionPiece sp(op, 1, 0, {0, 0});
-  EXPECT_EQ(1, sp.id());
-  auto ctx = new SessionContextImpl(0);
-  vector<vector<shared_ptr<const OwnedPiece>>> pieces = {{op}};
-  Session s(unique_ptr<SessionContextImpl>(ctx), 2, 1, 1, pieces);
-  EXPECT_EQ(hime::Tile::kNone, s.board().tiles()[0][0]);
-  EXPECT_EQ(hime::Card::kFront, s.decks()[0][0]);
+TEST_F(SessionTest, Constructor) {
+  EXPECT_EQ(hime::Tile::kNone, s_->board().tiles()[0][0]);
+  EXPECT_EQ(hime::Card::kFront, s_->decks()[0][0]);
 }
 
 }  // namespace
