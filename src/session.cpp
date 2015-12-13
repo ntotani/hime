@@ -38,9 +38,14 @@ Session::Session(unique_ptr<SessionContext> context, int player_num,
             Card::kSkill});
       }
   }
+  for (int i = 0; i < player_num; i++) {
+    hands_.push_back({});
+    trash_.push_back({});
+    hand_size_.push_back(4);
+  }
 }
 
-bool Session::CommitFormation(const unordered_map<string, Point> &formation) {
+bool Session::CommitFormation(const unordered_map<string, Point>& formation) {
   int team_id = 0;
   int piece_id = 0;
   for (auto &pieces : owned_pieces_) {
@@ -53,6 +58,7 @@ bool Session::CommitFormation(const unordered_map<string, Point> &formation) {
     }
     ++team_id;
   }
+  DrawCard();
   return false;
 }
 
@@ -61,6 +67,20 @@ unique_ptr<vector<Action>> Session::ProcessTurn(
   vector<Action> acts;
   acts.push_back(ActionMiss(0, 0));
   return make_unique<vector<Action>>(acts);
+}
+
+void Session::DrawCard() {
+  for (int i = 0; i < player_num_; i++) {
+    if (hands_[i].size() == 0 && decks_[i].size() == 0) {
+      decks_[i] = trash_[i];
+      trash_[i].clear();
+    }
+    while (hands_[i].size() < hand_size_[i] && decks_[i].size() > 0) {
+      int idx = context_->random() % decks_[i].size();
+      hands_[i].push_back(decks_[i][idx]);
+      decks_[i].erase(decks_[i].begin() + idx);
+    }
+  }
 }
 
 NS_HIME_END

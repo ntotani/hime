@@ -42,6 +42,12 @@ TEST_F(SessionTest, Constructor) {
   EXPECT_EQ(hime::Tile::kNone, s_->board().tiles()[0][0]);
   EXPECT_EQ(hime::Card::kFront, s_->decks()[0][0]);
   EXPECT_EQ(0, s_->pieces().size());
+  EXPECT_EQ(2, s_->decks().size());
+  EXPECT_EQ(12, s_->decks()[0].size());
+  EXPECT_EQ(2, s_->hands().size());
+  EXPECT_EQ(0, s_->hands()[0].size());
+  EXPECT_EQ(2, s_->trash().size());
+  EXPECT_EQ(0, s_->trash()[0].size());
 }
 
 TEST_F(SessionTest, CommitFormation) {
@@ -54,6 +60,8 @@ TEST_F(SessionTest, CommitFormation) {
   EXPECT_EQ(1, p->position().i);
   EXPECT_EQ(100, p->hp());
   EXPECT_EQ(100, p->pump().power);
+  EXPECT_EQ(8, s_->decks()[0].size());
+  EXPECT_EQ(4, s_->hands()[0].size());
 }
 
 TEST_F(SessionTest, ProcessTurn) {
