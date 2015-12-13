@@ -56,5 +56,11 @@ TEST_F(SessionTest, CommitFormation) {
   EXPECT_EQ(100, p->pump().power);
 }
 
+TEST_F(SessionTest, ProcessTurn) {
+  auto acts = s_->ProcessTurn({});
+  EXPECT_EQ(1, acts->size());
+  EXPECT_EQ(hime::Action::Type::kMiss, acts->at(0).type);
+}
+
 }  // namespace
 

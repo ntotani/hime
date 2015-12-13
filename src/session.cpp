@@ -56,5 +56,12 @@ bool Session::CommitFormation(const unordered_map<string, Point> &formation) {
   return false;
 }
 
+unique_ptr<vector<Action>> Session::ProcessTurn(
+    const vector<Command>& commands) {
+  vector<Action> acts;
+  acts.push_back(ActionMiss(0, 0));
+  return make_unique<vector<Action>>(acts);
+}
+
 NS_HIME_END
 

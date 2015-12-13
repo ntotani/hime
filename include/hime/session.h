@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "hime/action.h"
 #include "hime/board.h"
 #include "hime/piece.h"
 
@@ -31,12 +32,23 @@ class SessionContextImpl : public SessionContext {
 
 class Session {
  public:
+  struct Command {
+    const int piece_id;
+    const int card_idx;
+    Command(int piece_id, int card_idx)
+        :piece_id(piece_id), card_idx(card_idx) {}
+  };
+
   Session(std::unique_ptr<SessionContext> context, int player_num,
       int board_id, int deck_id,
       const std::vector<std::vector<std::shared_ptr<const OwnedPiece>>>
           &pieces);
+
   bool CommitFormation(
       const std::unordered_map<std::string, Point> &formation);
+  std::unique_ptr<std::vector<Action>> ProcessTurn(
+      const std::vector<Command>& commands);
+
   inline int player_num() const { return player_num_; }
   inline const std::vector<std::vector<std::shared_ptr<const OwnedPiece>>>&
       owned_pieces() const { return owned_pieces_; }
