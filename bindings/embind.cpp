@@ -25,17 +25,12 @@ using hime::OwnedPiece;
 using hime::SessionPiece;
 using hime::Parameter;
 using hime::Planet;
-using hime::Point;
 using hime::Session;
 using hime::SessionContext;
 using hime::SessionContextImpl;
 using hime::Skill;
 
 EMSCRIPTEN_BINDINGS(hime) {
-  class_<Point>("Point")
-      .constructor<int, int>()
-      .property("i", &Point::i)
-      .property("j", &Point::j);
   enum_<Planet>("Planet")
       .value("kSun", Planet::kSun)
       .value("kMoon", Planet::kMoon)
