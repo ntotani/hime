@@ -94,7 +94,8 @@ void Session::DrawCard() {
       decks_[i] = trash_[i];
       trash_[i].clear();
     }
-    while (hands_[i].size() < hand_size_[i] && decks_[i].size() > 0) {
+    while (hands_[i].size() < static_cast<size_t>(hand_size_[i])
+        && decks_[i].size() > 0) {
       int idx = context_->random() % decks_[i].size();
       hands_[i].push_back(decks_[i][idx]);
       decks_[i].erase(decks_[i].begin() + idx);

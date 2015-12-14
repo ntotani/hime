@@ -75,7 +75,7 @@ class Session {
   std::vector<std::vector<Card>> decks_;
   std::vector<std::vector<Card>> hands_;
   std::vector<std::vector<Card>> trash_;
-  std::vector<size_t> hand_size_;
+  std::vector<int> hand_size_;
   DISALLOW_COPY_AND_ASSIGN(Session);
 };
 
