@@ -1,5 +1,6 @@
 #include "hime/session.h"
 
+#include <algorithm>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -98,14 +99,19 @@ int Session::FindPiece(Point position) const {
 }
 
 int Session::CalcDamage(int actor_id, int target_id) const {
+  if (pieces_.size() <= static_cast<size_t>(actor_id)
+      || pieces_.size() <= static_cast<size_t>(target_id)) {
+    return 0;
+  }
   auto& actor = pieces_[actor_id];
   auto& target = pieces_[target_id];
-  int attack = actor->param().power * actor->pump().power / 100;
+  int attack = actor->param().power;
   int defense = actor->action() == PieceAction::kPhysical ?
-      target->param().defense * target->pump().defense / 100:
-      target->param().resist * target->pump().resist / 100;
-  // TODO(ntotani): planet rate
-  return 40 * attack / defense;
+      target->param().defense : target->param().resist;
+  int pr = kPlanetRate
+      [static_cast<int>(actor->planet())]
+      [static_cast<int>(target->planet())];
+  return std::max(40 * attack * pr / 100 / defense, 1);
 }
 
 void Session::DrawCard() {

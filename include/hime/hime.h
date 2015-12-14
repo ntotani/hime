@@ -2,6 +2,7 @@
 #define INCLUDE_HIME_HIME_H_
 
 #include <string>
+#include <vector>
 
 #define NS_HIME_BEGIN namespace hime {
 #define NS_HIME_END   }
@@ -20,6 +21,16 @@ enum class Planet {
   kJupiter,
   kVenus,
   kSaturn,
+};
+
+const std::vector<std::vector<int>> kPlanetRate = {
+  {100, 100, 100, 100, 100, 100, 100},
+  {100, 100, 100, 100, 100, 100, 100},
+  {200, 100, 100,  50, 200, 100,  50},
+  {200, 100, 200,  50,  50, 100,  50},
+  {200, 100,  50, 200, 100, 100,  50},
+  {100, 100, 100, 100, 100, 100, 100},
+  { 50, 100, 100, 100, 100, 100, 100}
 };
 
 enum class PieceAction {
@@ -70,10 +81,10 @@ enum class Card {
 
 struct Point {
   int i, j;
-  bool operator==(const Point &rhs) const {
+  bool operator==(const Point& rhs) const {
     return i == rhs.i && j == rhs.j;
   }
-  Point operator+(const Point &rhs) const {
+  Point operator+(const Point& rhs) const {
     return {i + rhs.i, j + rhs.j};
   }
 };

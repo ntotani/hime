@@ -32,14 +32,21 @@ class SessionContextStub : public SessionContext {
 class SessionTest : public testing::Test {
  protected:
   virtual void SetUp() {
-    auto s1 = make_shared<const Skill>(
+    auto ps1 = make_shared<const Skill>(
         "1", "全体回復", "味方全員を@回復する", 30);
-    auto s2 = make_shared<const Skill>(
+    auto ps2 = make_shared<const Skill>(
+        "1", "一矢", "この駒を倒した相手に攻撃する", 0);
+    auto as1 = make_shared<const Skill>(
         "1", "癒やし", "周りの駒が毎ターン@ずつ回復する", 30);
-    auto mp = make_shared<const MasterPiece>("1", "姫", Planet::kSun,
-        PieceAction::kHeal, s1, s2, hime::Parameter(60, 50, 80));
-    auto op = make_shared<const OwnedPiece>(mp, "a");
-    vector<vector<shared_ptr<const OwnedPiece>>> pieces = {{op}};
+    auto as2 = make_shared<const Skill>(
+        "1", "突撃", "攻撃力2倍で2マス前進", 0);
+    auto mp1 = make_shared<const MasterPiece>("1", "姫", Planet::kSun,
+        PieceAction::kHeal, ps1, as1, hime::Parameter(60, 50, 80));
+    auto mp2 = make_shared<const MasterPiece>("1", "浪人", Planet::kMars,
+        PieceAction::kPhysical, ps2, as2, hime::Parameter(80, 80, 60));
+    auto op1 = make_shared<const OwnedPiece>(mp1, "a");
+    auto op2 = make_shared<const OwnedPiece>(mp2, "b");
+    vector<vector<shared_ptr<const OwnedPiece>>> pieces = {{op1}, {op2}};
     s_ = new Session(make_unique<SessionContextStub>(), 2, 1, 1, pieces);
   }
   virtual void TearDown() {
@@ -113,6 +120,16 @@ TEST_F(SessionTest, FindPiece) {
   s_->CommitFormation({{"a", {4, 2}}});
   EXPECT_EQ(0, s_->FindPiece({4, 2}));
   EXPECT_EQ(-1, s_->FindPiece({100, 100}));
+}
+
+TEST_F(SessionTest, CalcDamage) {
+  s_->CommitFormation({{"a", {6, 2}}, {"b", {8, 2}}});
+  EXPECT_EQ(128, s_->CalcDamage(1, 0));
+}
+
+TEST_F(SessionTest, CalcDamageInvalid) {
+  s_->CommitFormation({{"a", {6, 2}}, {"b", {8, 2}}});
+  EXPECT_EQ(0, s_->CalcDamage(100, 0));
 }
 
 }  // namespace

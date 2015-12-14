@@ -12,6 +12,12 @@ struct Parameter {
   const int power, defense, resist;
   Parameter(int power, int defense, int resist)
       :power(power), defense(defense), resist(resist) {}
+  Parameter operator*(const Parameter& rhs) const {
+    return {power * rhs.power, defense * rhs.defense, resist * rhs.resist};
+  }
+  Parameter operator/(const int& rhs) const {
+    return {power / rhs, defense / rhs, resist / rhs};
+  }
 };
 
 class MasterPiece {
@@ -81,8 +87,11 @@ class SessionPiece {
   inline Point position() const { return position_; }
   inline int hp() const { return hp_; }
   inline Parameter pump() const { return pump_; }
-  inline Parameter param() const { return owned_->master()->param(); }
+  inline Parameter param() const {
+    return owned_->master()->param() * pump_ / 100;
+  }
   inline PieceAction action() const { return owned_->master()->action(); }
+  inline Planet planet() const { return owned_->master()->planet(); }
 
  private:
   const std::shared_ptr<const OwnedPiece> owned_;
