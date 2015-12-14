@@ -121,10 +121,9 @@ vector<unique_ptr<Action>> Session::ApplyDir(int piece_id, Point dir) {
     local ni = friend.i + di
     local nj = friend.j + dj
   */
-  // TODO(ntotani): check hit
-  /*
-    local hit = self:findChara(ni, nj)
-  */
+  auto& actor = pieces_[piece_id];
+  auto dst = actor->position() + dir;
+  int hit = FindPiece(dst);
   // TODO(ntotani): sniper skill
   /*
     if (friend.pskill == "5" or friend.pskill == "6") and not hit then
@@ -137,18 +136,16 @@ vector<unique_ptr<Action>> Session::ApplyDir(int piece_id, Point dir) {
         end
     end
   */
-  // TODO(ntotani): attack if hit
-  /*
-   if hit then
-        if friend.act == 2 then
-            self:heal(friend, hit, nil, acts)
-        else
-            self:attack(friend, hit, nil, acts)
-        end
-        return true
-    end
-  */
-  auto ret = TryMove(piece_id, pieces_[piece_id]->position() + dir);
+  vector<unique_ptr<Action>> ret;
+  if (hit != -1) {
+    if (actor->owned()->master()->action() == PieceAction::kHeal) {
+      // TODO(ntotani): heal
+    } else {
+      // TODO(ntotani): attack
+    }
+  } else {
+    ret = TryMove(piece_id, pieces_[piece_id]->position() + dir);
+  }
   acts.insert(acts.end(),
       make_move_iterator(ret.begin()), make_move_iterator(ret.end()));
   return move(acts);

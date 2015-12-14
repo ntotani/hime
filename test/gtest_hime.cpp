@@ -20,6 +20,7 @@ using hime::SessionContext;
 using hime::SessionContextImpl;
 using hime::Planet;
 using hime::Point;
+using hime::PieceAction;
 
 namespace {
 
@@ -36,7 +37,7 @@ class SessionTest : public testing::Test {
     auto s2 = make_shared<const Skill>(
         "1", "癒やし", "周りの駒が毎ターン@ずつ回復する", 30);
     auto mp = make_shared<const MasterPiece>("1", "姫", Planet::kSun,
-        s1, s2, hime::Parameter(60, 50, 80));
+        PieceAction::kHeal, s1, s2, hime::Parameter(60, 50, 80));
     auto op = make_shared<const OwnedPiece>(mp, "a");
     vector<vector<shared_ptr<const OwnedPiece>>> pieces = {{op}};
     s_ = new Session(make_unique<SessionContextStub>(), 2, 1, 1, pieces);
