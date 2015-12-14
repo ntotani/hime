@@ -19,6 +19,7 @@ using hime::Session;
 using hime::SessionContext;
 using hime::SessionContextImpl;
 using hime::Planet;
+using hime::Point;
 
 namespace {
 
@@ -42,6 +43,10 @@ class SessionTest : public testing::Test {
   }
   virtual void TearDown() {
     delete s_;
+  }
+  void ExpectPoint(const Point& a, const Point& b) {
+    EXPECT_EQ(a.i, b.i);
+    EXPECT_EQ(a.j, b.j);
   }
   Session* s_;
 };
@@ -73,16 +78,26 @@ TEST_F(SessionTest, CommitFormation) {
 }
 
 TEST_F(SessionTest, ProcessTurn) {
-  s_->CommitFormation({{"a", {9, 3}}});
-  auto acts = s_->ProcessTurn({{0, 0}});
+  s_->CommitFormation({{"a", {4, 2}}});
+  auto acts = s_->ProcessTurn({{0, 0}});  // Front
   EXPECT_EQ(1, acts.size());
   auto act = unique_ptr<ActionMove>(
       static_cast<ActionMove*>(acts[0].release()));
   EXPECT_EQ(Action::Type::kMove, act->type);
-  EXPECT_EQ(9, act->from.i);
-  EXPECT_EQ(7, act->to.i);
+  ExpectPoint({4, 2}, act->from);
+  ExpectPoint({2, 2}, act->to);
   auto &p = s_->pieces()[0];
-  EXPECT_EQ(7, p->position().i);
+  ExpectPoint({2, 2}, p->position());
+  s_->ProcessTurn({{0, 0}});  // FrontR
+  ExpectPoint({1, 3}, p->position());
+  s_->ProcessTurn({{0, 0}});  // FrontL
+  ExpectPoint({0, 2}, p->position());
+  s_->ProcessTurn({{0, 0}});  // BackR
+  ExpectPoint({1, 3}, p->position());
+  s_->ProcessTurn({{0, 0}});  // BackL
+  ExpectPoint({2, 2}, p->position());
+  s_->ProcessTurn({{0, 0}});  // Back
+  ExpectPoint({4, 2}, p->position());
 }
 
 }  // namespace

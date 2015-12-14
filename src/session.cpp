@@ -67,7 +67,11 @@ vector<unique_ptr<Action>> Session::ProcessTurn(
   vector<unique_ptr<Action>> acts;
   for (auto cmd : commands) {
     // TODO(ntotani): validate no actor
-    auto card = hands_[pieces_[cmd.piece_id]->team()][cmd.card_idx];
+    auto& actor = pieces_[cmd.piece_id];
+    auto& hands = hands_[actor->team()];
+    auto card = hands[cmd.card_idx];
+    hands.erase(hands.begin() + cmd.card_idx);
+    trash_[actor->team()].push_back(card);
     if (card == Card::kSkill) {
       // TODO(ntotani): parse skill
     } else {
@@ -79,6 +83,7 @@ vector<unique_ptr<Action>> Session::ProcessTurn(
       }
     }
   }
+  DrawCard();
   return move(acts);
 }
 
@@ -198,6 +203,16 @@ vector<Point> Session::Card2Dirs(Card card) {
   vector<Point> dirs;
   switch (card) {
     case Card::kFront: dirs = {{-2, 0}}; break;
+    case Card::kFrontR: dirs = {{-1, 1}}; break;
+    case Card::kFrontL: dirs = {{-1, -1}}; break;
+    case Card::kBackR: dirs = {{1, 1}}; break;
+    case Card::kBackL: dirs = {{1, -1}}; break;
+    case Card::kBack: dirs = {{2, 0}}; break;
+    case Card::kFrontFront: dirs = {{-2, 0}, {-2, 0}}; break;
+    case Card::kFrontRFrontR: dirs = {{-1, 1}, {-1, 1}}; break;
+    case Card::kFrontLFrontL: dirs = {{-1, -1}, {-1, -1}}; break;
+    case Card::kFrontFrontR: dirs = {{-2, 0}, {-1, 1}}; break;
+    case Card::kFrontFrontL: dirs = {{-2, 0}, {-1, -1}}; break;
     default: dirs = {};
   }
   return move(dirs);
