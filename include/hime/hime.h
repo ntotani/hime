@@ -70,6 +70,9 @@ enum class Card {
 
 struct Point {
   int i, j;
+  bool operator==(const Point &rhs) const {
+    return i == rhs.i && j == rhs.j;
+  }
   Point operator+(const Point &rhs) const {
     return {i + rhs.i, j + rhs.j};
   }

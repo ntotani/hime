@@ -88,6 +88,15 @@ vector<unique_ptr<Action>> Session::ProcessTurn(
   return move(acts);
 }
 
+int Session::FindPiece(Point position) const {
+  for (auto& e : pieces_) {
+    if (e->position() == position) {
+      return e->id();
+    }
+  }
+  return -1;
+}
+
 void Session::DrawCard() {
   for (int i = 0; i < player_num_; i++) {
     if (hands_[i].size() == 0 && decks_[i].size() == 0) {

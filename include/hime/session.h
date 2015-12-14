@@ -48,6 +48,7 @@ class Session {
       const std::unordered_map<std::string, Point>& formation);
   std::vector<std::unique_ptr<Action>> ProcessTurn(
       const std::vector<Command>& commands);
+  int FindPiece(Point position) const;
 
   inline int player_num() const { return player_num_; }
   inline const std::vector<std::vector<std::shared_ptr<const OwnedPiece>>>&

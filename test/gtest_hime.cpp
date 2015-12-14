@@ -108,5 +108,11 @@ TEST_F(SessionTest, ProcessTurnInvalid) {
   EXPECT_EQ(0, acts.size());
 }
 
+TEST_F(SessionTest, FindPiece) {
+  s_->CommitFormation({{"a", {4, 2}}});
+  EXPECT_EQ(0, s_->FindPiece({4, 2}));
+  EXPECT_EQ(-1, s_->FindPiece({100, 100}));
+}
+
 }  // namespace
 
