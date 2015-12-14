@@ -70,6 +70,9 @@ enum class Card {
 
 struct Point {
   int i, j;
+  Point operator+(const Point &rhs) const {
+    return {i + rhs.i, j + rhs.j};
+  }
 };
 
 NS_HIME_END

@@ -68,10 +68,15 @@ vector<unique_ptr<Action>> Session::ProcessTurn(
   for (auto cmd : commands) {
     // TODO(ntotani): validate no actor
     auto card = hands_[pieces_[cmd.piece_id]->team()][cmd.card_idx];
-    for (auto dir : Card2Dirs(card)) {
-      auto e = MovePiece(cmd.piece_id, dir);
-      acts.insert(acts.end(),
-          make_move_iterator(e.begin()), make_move_iterator(e.end()));
+    if (card == Card::kSkill) {
+      // TODO(ntotani): parse skill
+    } else {
+      // TODO(ntotani): pSkill move twice
+      for (auto dir : Card2Dirs(card)) {
+        auto e = ApplyDir(cmd.piece_id, dir);
+        acts.insert(acts.end(),
+            make_move_iterator(e.begin()), make_move_iterator(e.end()));
+      }
     }
   }
   return move(acts);
@@ -91,12 +96,101 @@ void Session::DrawCard() {
   }
 }
 
-vector<unique_ptr<Action>> Session::MovePiece(int piece_id, Point dir) {
+vector<unique_ptr<Action>> Session::ApplyDir(int piece_id, Point dir) {
   vector<unique_ptr<Action>> acts;
-  auto from = pieces_[piece_id]->position();
-  pieces_[piece_id]->MoveBy(dir);
+  // TODO(ntotani): rotate dir
+  /*
+    local di = dir.i * (friend.team == "red" and 1 or -1)
+    local dj = dir.j * (friend.team == "red" and 1 or -1)
+    local ni = friend.i + di
+    local nj = friend.j + dj
+  */
+  // TODO(ntotani): check hit
+  /*
+    local hit = self:findChara(ni, nj)
+  */
+  // TODO(ntotani): sniper skill
+  /*
+    if (friend.pskill == "5" or friend.pskill == "6") and not hit then
+        for i = 1, us.findWhere(PSKILL, {id = friend.pskill}).at do
+            hit = self:findChara(ni + di * i, nj + dj * i)
+            if hit then
+                table.insert(acts, {type = "pskill", actor = friend.id, id = friend.pskill})
+                break
+            end
+        end
+    end
+  */
+  // TODO(ntotani): attack if hit
+  /*
+   if hit then
+        if friend.act == 2 then
+            self:heal(friend, hit, nil, acts)
+        else
+            self:attack(friend, hit, nil, acts)
+        end
+        return true
+    end
+  */
+  auto ret = TryMove(piece_id, pieces_[piece_id]->position() + dir);
+  acts.insert(acts.end(),
+      make_move_iterator(ret.begin()), make_move_iterator(ret.end()));
+  return move(acts);
+}
+
+vector<unique_ptr<Action>> Session::TryMove(int piece_id, Point position) {
+  vector<unique_ptr<Action>> acts;
+  // TODO(ntotani): check ob
+  /*
+  if di < 1 or di > #self.tiles or dj < 1 or dj > #self.tiles[1] or self.tiles[di][dj] == 0 then
+      -- out of bounds
+      acts[#acts + 1] = {type = "ob", actor = actor.id, i = di, j = dj}
+      actor.hp = 0
+      if self:isHime(actor) or not us.any(self.charas, function(e) return e.team == actor.team and e.hp > 0 end) then
+          acts[#acts + 1] = {type = "end", lose = actor.team}
+      end
+      return true
+  end
+  */
+  // TODO(ntotani): return if other piece
+  /*
+  if self:findChara(di, dj) then
+      return true
+  end
+  */
   acts.push_back(make_unique<ActionMove>(
-      piece_id, from, pieces_[piece_id]->position()));
+      piece_id, pieces_[piece_id]->position(), position));
+  auto ret = CommitMove(piece_id, position);
+  acts.insert(acts.end(),
+      make_move_iterator(ret.begin()), make_move_iterator(ret.end()));
+  return move(acts);
+}
+
+vector<unique_ptr<Action>> Session::CommitMove(int piece_id, Point position) {
+  pieces_[piece_id]->position_ = position;
+  vector<unique_ptr<Action>> acts;
+  // TODO(ntotani): check actor is hime
+  /*
+  if self:isHime(actor) then
+      if self.tiles[di][dj] == Shogi.BLUE_CAMP and actor.team == "red" then
+          acts[#acts + 1] = {type = "end", lose = "blue"}
+          return true
+      elseif self.tiles[di][dj] == Shogi.RED_CAMP and actor.team == "blue" then
+          acts[#acts + 1] = {type = "end", lose = "red"}
+          return true
+      end
+  end
+  */
+  // TODO(ntotani): check evo
+  /*
+  if (self.tiles[di][dj] == Shogi.BLUE_EVO and actor.team == "red" or
+      self.tiles[di][dj] == Shogi.RED_EVO and actor.team == "blue") and actor.evo then
+      local evo = us.findWhere(CHARAS, {id = actor.evo})
+      table.insert(acts, {type = "evo", actor = actor.id, from = actor.master.id, to = evo.id})
+      setmetatable(actor, {__index = evo})
+      actor.master = evo
+  end
+  */
   return move(acts);
 }
 

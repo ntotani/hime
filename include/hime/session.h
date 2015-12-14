@@ -61,7 +61,9 @@ class Session {
 
  private:
   void DrawCard();
-  std::vector<std::unique_ptr<Action>> MovePiece(int piece_id, Point dir);
+  std::vector<std::unique_ptr<Action>> ApplyDir(int piece_id, Point dir);
+  std::vector<std::unique_ptr<Action>> TryMove(int piece_id, Point position);
+  std::vector<std::unique_ptr<Action>> CommitMove(int piece_id, Point position);
   std::vector<Point> Card2Dirs(Card card);
 
   const int player_num_;
