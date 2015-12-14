@@ -100,5 +100,13 @@ TEST_F(SessionTest, ProcessTurn) {
   ExpectPoint({4, 2}, p->position());
 }
 
+TEST_F(SessionTest, ProcessTurnInvalid) {
+  s_->CommitFormation({{"a", {4, 2}}});
+  auto acts = s_->ProcessTurn({{100, 0}});
+  EXPECT_EQ(0, acts.size());
+  acts = s_->ProcessTurn({{0, 100}});
+  EXPECT_EQ(0, acts.size());
+}
+
 }  // namespace
 

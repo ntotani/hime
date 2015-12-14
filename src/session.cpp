@@ -66,9 +66,10 @@ vector<unique_ptr<Action>> Session::ProcessTurn(
     const vector<Command>& commands) {
   vector<unique_ptr<Action>> acts;
   for (auto cmd : commands) {
-    // TODO(ntotani): validate no actor
+    if (pieces_.size() <= static_cast<size_t>(cmd.piece_id)) continue;
     auto& actor = pieces_[cmd.piece_id];
     auto& hands = hands_[actor->team()];
+    if (hands.size() <= static_cast<size_t>(cmd.card_idx)) continue;
     auto card = hands[cmd.card_idx];
     hands.erase(hands.begin() + cmd.card_idx);
     trash_[actor->team()].push_back(card);
