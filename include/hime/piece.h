@@ -67,6 +67,7 @@ class SessionPiece {
       :owned_(owned), id_(id), team_(team), position_(position), hp_(100),
       pump_(100, 100, 100) {
   }
+  void MoveBy(Point p) { position_ = {position_.i + p.i, position_.j + p.j}; }
   inline std::shared_ptr<const OwnedPiece> owned() const { return owned_; }
   inline int id() const { return id_; }
   inline int team() const { return team_; }

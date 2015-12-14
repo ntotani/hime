@@ -62,11 +62,19 @@ bool Session::CommitFormation(const unordered_map<string, Point>& formation) {
   return false;
 }
 
-unique_ptr<vector<Action>> Session::ProcessTurn(
+vector<unique_ptr<Action>> Session::ProcessTurn(
     const vector<Command>& commands) {
-  vector<Action> acts;
-  acts.push_back(ActionMiss(0, 0));
-  return make_unique<vector<Action>>(acts);
+  vector<unique_ptr<Action>> acts;
+  for (auto cmd : commands) {
+    // TODO(ntotani): validate no actor
+    auto card = hands_[pieces_[cmd.piece_id]->team()][cmd.card_idx];
+    for (auto dir : Card2Dirs(card)) {
+      auto e = MovePiece(cmd.piece_id, dir);
+      acts.insert(acts.end(),
+          make_move_iterator(e.begin()), make_move_iterator(e.end()));
+    }
+  }
+  return move(acts);
 }
 
 void Session::DrawCard() {
@@ -81,6 +89,24 @@ void Session::DrawCard() {
       decks_[i].erase(decks_[i].begin() + idx);
     }
   }
+}
+
+vector<unique_ptr<Action>> Session::MovePiece(int piece_id, Point dir) {
+  vector<unique_ptr<Action>> acts;
+  auto from = pieces_[piece_id]->position();
+  pieces_[piece_id]->MoveBy(dir);
+  acts.push_back(make_unique<ActionMove>(
+      piece_id, from, pieces_[piece_id]->position()));
+  return move(acts);
+}
+
+vector<Point> Session::Card2Dirs(Card card) {
+  vector<Point> dirs;
+  switch (card) {
+    case Card::kFront: dirs = {{-2, 0}}; break;
+    default: dirs = {};
+  }
+  return move(dirs);
 }
 
 NS_HIME_END

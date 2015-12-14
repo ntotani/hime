@@ -7,7 +7,10 @@
 using std::make_shared;
 using std::make_unique;
 using std::shared_ptr;
+using std::unique_ptr;
 using std::vector;
+using hime::Action;
+using hime::ActionMove;
 using hime::MasterPiece;
 using hime::OwnedPiece;
 using hime::SessionPiece;
@@ -18,6 +21,11 @@ using hime::SessionContextImpl;
 using hime::Planet;
 
 namespace {
+
+class SessionContextStub : public SessionContext {
+ public:
+  int random() { return 0; }
+};
 
 class SessionTest : public testing::Test {
  protected:
@@ -30,7 +38,7 @@ class SessionTest : public testing::Test {
         s1, s2, hime::Parameter(60, 50, 80));
     auto op = make_shared<const OwnedPiece>(mp, "a");
     vector<vector<shared_ptr<const OwnedPiece>>> pieces = {{op}};
-    s_ = new Session(make_unique<SessionContextImpl>(0), 2, 1, 1, pieces);
+    s_ = new Session(make_unique<SessionContextStub>(), 2, 1, 1, pieces);
   }
   virtual void TearDown() {
     delete s_;
@@ -65,9 +73,16 @@ TEST_F(SessionTest, CommitFormation) {
 }
 
 TEST_F(SessionTest, ProcessTurn) {
-  auto acts = s_->ProcessTurn({});
-  EXPECT_EQ(1, acts->size());
-  EXPECT_EQ(hime::Action::Type::kMiss, acts->at(0).type);
+  s_->CommitFormation({{"a", {9, 3}}});
+  auto acts = s_->ProcessTurn({{0, 0}});
+  EXPECT_EQ(1, acts.size());
+  auto act = unique_ptr<ActionMove>(
+      static_cast<ActionMove*>(acts[0].release()));
+  EXPECT_EQ(Action::Type::kMove, act->type);
+  EXPECT_EQ(9, act->from.i);
+  EXPECT_EQ(7, act->to.i);
+  auto &p = s_->pieces()[0];
+  EXPECT_EQ(7, p->position().i);
 }
 
 }  // namespace

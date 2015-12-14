@@ -69,8 +69,7 @@ enum class Card {
 };
 
 struct Point {
-  const int i, j;
-  Point(int i, int j):i(i), j(j) {}
+  int i, j;
 };
 
 NS_HIME_END

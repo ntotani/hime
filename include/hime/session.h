@@ -46,7 +46,7 @@ class Session {
 
   bool CommitFormation(
       const std::unordered_map<std::string, Point>& formation);
-  std::unique_ptr<std::vector<Action>> ProcessTurn(
+  std::vector<std::unique_ptr<Action>> ProcessTurn(
       const std::vector<Command>& commands);
 
   inline int player_num() const { return player_num_; }
@@ -61,6 +61,8 @@ class Session {
 
  private:
   void DrawCard();
+  std::vector<std::unique_ptr<Action>> MovePiece(int piece_id, Point dir);
+  std::vector<Point> Card2Dirs(Card card);
 
   const int player_num_;
   const std::vector<std::vector<std::shared_ptr<const OwnedPiece>>>
@@ -71,7 +73,7 @@ class Session {
   std::vector<std::vector<Card>> decks_;
   std::vector<std::vector<Card>> hands_;
   std::vector<std::vector<Card>> trash_;
-  std::vector<int> hand_size_;
+  std::vector<size_t> hand_size_;
   DISALLOW_COPY_AND_ASSIGN(Session);
 };
 
