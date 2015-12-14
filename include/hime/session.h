@@ -49,6 +49,7 @@ class Session {
   std::vector<std::unique_ptr<Action>> ProcessTurn(
       const std::vector<Command>& commands);
   int FindPiece(Point position) const;
+  int CalcDamage(int actor_id, int target_id) const;
 
   inline int player_num() const { return player_num_; }
   inline const std::vector<std::vector<std::shared_ptr<const OwnedPiece>>>&
@@ -66,6 +67,9 @@ class Session {
   std::vector<std::unique_ptr<Action>> TryMove(int piece_id, Point position);
   std::vector<std::unique_ptr<Action>> CommitMove(int piece_id, Point position);
   std::vector<Point> Card2Dirs(Card card);
+  std::vector<std::unique_ptr<Action>> Attack(int actor_id, int target_id);
+  std::vector<std::unique_ptr<Action>> Attack(
+      int actor_id, int target_id, int damage);
 
   const int player_num_;
   const std::vector<std::vector<std::shared_ptr<const OwnedPiece>>>

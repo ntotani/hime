@@ -97,6 +97,17 @@ int Session::FindPiece(Point position) const {
   return -1;
 }
 
+int Session::CalcDamage(int actor_id, int target_id) const {
+  auto& actor = pieces_[actor_id];
+  auto& target = pieces_[target_id];
+  int attack = actor->param().power * actor->pump().power / 100;
+  int defense = actor->action() == PieceAction::kPhysical ?
+      target->param().defense * target->pump().defense / 100:
+      target->param().resist * target->pump().resist / 100;
+  // TODO(ntotani): planet rate
+  return 40 * attack / defense;
+}
+
 void Session::DrawCard() {
   for (int i = 0; i < player_num_; i++) {
     if (hands_[i].size() == 0 && decks_[i].size() == 0) {
@@ -138,7 +149,7 @@ vector<unique_ptr<Action>> Session::ApplyDir(int piece_id, Point dir) {
   */
   vector<unique_ptr<Action>> ret;
   if (hit != -1) {
-    if (actor->owned()->master()->action() == PieceAction::kHeal) {
+    if (actor->action() == PieceAction::kHeal) {
       // TODO(ntotani): heal
     } else {
       // TODO(ntotani): attack
@@ -224,6 +235,17 @@ vector<Point> Session::Card2Dirs(Card card) {
     default: dirs = {};
   }
   return move(dirs);
+}
+
+vector<unique_ptr<Action>> Session::Attack(int actor_id, int target_id) {
+  int damage = CalcDamage(actor_id, target_id);
+  return move(Attack(actor_id, target_id, damage));
+}
+
+vector<unique_ptr<Action>> Session::Attack(
+    int actor_id, int target_id, int damage) {
+  // TODO(ntotani): impl
+  return {};
 }
 
 NS_HIME_END

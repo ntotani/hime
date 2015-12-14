@@ -68,6 +68,7 @@ class Session;
 
 class SessionPiece {
   friend Session;
+
  public:
   SessionPiece(std::shared_ptr<const OwnedPiece> owned,
       int id, int team, Point position)
@@ -80,6 +81,8 @@ class SessionPiece {
   inline Point position() const { return position_; }
   inline int hp() const { return hp_; }
   inline Parameter pump() const { return pump_; }
+  inline Parameter param() const { return owned_->master()->param(); }
+  inline PieceAction action() const { return owned_->master()->action(); }
 
  private:
   const std::shared_ptr<const OwnedPiece> owned_;
