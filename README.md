@@ -1,6 +1,4 @@
-- cd make
-- make
+- install yaml-cpp
 - make test
-- cd ..
-- bin/gtest_hime
+- build/bin/gtest_hime
 

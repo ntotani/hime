@@ -2,18 +2,21 @@
 
 #include <string>
 
+#include "yaml-cpp/yaml.h"
+
 using std::string;
 using std::make_shared;
 
 NS_HIME_BEGIN
 
 void Master::LoadPiece(string yaml) {
+  YAML::Node n = YAML::Load(yaml);
   piece_["1"] = make_shared<const MasterPiece>("1", "姫",
       Planet::kSun, PieceAction::kHeal, skill_["a1"], skill_["p1"],
       hime::Parameter(60, 50, 80));
   piece_["3"] = make_shared<const MasterPiece>("3", "浪人",
       Planet::kMars, PieceAction::kPhysical, skill_["a3"], skill_["p3"],
-      hime::Parameter(80, 80, 60));
+      hime::Parameter(n[0].as<int>(), 80, 60));
 }
 
 void Master::LoadSkill(string yaml) {

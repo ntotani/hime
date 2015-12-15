@@ -29,7 +29,7 @@ class HimeEnv : public testing::Environment {
  public:
   virtual void SetUp() {
     master.LoadSkill("");
-    master.LoadPiece("");
+    master.LoadPiece("[80]");
   }
   hime::Master master;
 };
