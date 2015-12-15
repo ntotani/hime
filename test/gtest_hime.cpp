@@ -132,5 +132,46 @@ TEST_F(SessionTest, CalcDamageInvalid) {
   EXPECT_EQ(0, s_->CalcDamage(100, 0));
 }
 
+TEST_F(SessionTest, RotateDir) {
+  ExpectPoint({2, 0}, s_->RotateDir({-2, 0}, 1));
+  ExpectPoint({1, -1}, s_->RotateDir({-1, 1}, 1));
+}
+
+class SessionThreeTest : public testing::Test {
+ protected:
+  virtual void SetUp() {
+    auto ps1 = make_shared<const Skill>(
+        "1", "全体回復", "味方全員を@回復する", 30);
+    auto ps2 = make_shared<const Skill>(
+        "1", "一矢", "この駒を倒した相手に攻撃する", 0);
+    auto as1 = make_shared<const Skill>(
+        "1", "癒やし", "周りの駒が毎ターン@ずつ回復する", 30);
+    auto as2 = make_shared<const Skill>(
+        "1", "突撃", "攻撃力2倍で2マス前進", 0);
+    auto mp1 = make_shared<const MasterPiece>("1", "姫", Planet::kSun,
+        PieceAction::kHeal, ps1, as1, hime::Parameter(60, 50, 80));
+    auto mp2 = make_shared<const MasterPiece>("1", "浪人", Planet::kMars,
+        PieceAction::kPhysical, ps2, as2, hime::Parameter(80, 80, 60));
+    auto op1 = make_shared<const OwnedPiece>(mp1, "a");
+    auto op2 = make_shared<const OwnedPiece>(mp2, "b");
+    auto op3 = make_shared<const OwnedPiece>(mp1, "c");
+    vector<vector<shared_ptr<const OwnedPiece>>> pieces = {{op1}, {op2}, {op3}};
+    s_ = new Session(make_unique<SessionContextStub>(), 3, 1, 1, pieces);
+  }
+  virtual void TearDown() {
+    delete s_;
+  }
+  void ExpectPoint(const Point& a, const Point& b) {
+    EXPECT_EQ(a.i, b.i);
+    EXPECT_EQ(a.j, b.j);
+  }
+  Session* s_;
+};
+
+TEST_F(SessionThreeTest, RotateDir) {
+  ExpectPoint({1, 1}, s_->RotateDir({-2, 0}, 1));
+  ExpectPoint({2, 0}, s_->RotateDir({-1, 1}, 1));
+}
+
 }  // namespace
 

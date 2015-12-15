@@ -50,6 +50,7 @@ class Session {
       const std::vector<Command>& commands);
   int FindPiece(Point position) const;
   int CalcDamage(int actor_id, int target_id) const;
+  Point RotateDir(Point dir, int team) const;
 
   inline int player_num() const { return player_num_; }
   inline const std::vector<std::vector<std::shared_ptr<const OwnedPiece>>>&

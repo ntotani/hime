@@ -16,6 +16,9 @@ using std::vector;
 
 NS_HIME_BEGIN
 
+const vector<Point> kDirs = {
+    {-2, 0}, {-1, 1}, {1, 1}, {2, 0}, {1, -1}, {-1, -1}};
+
 Session::Session(unique_ptr<SessionContext> context, int player_num,
     int board_id, int deck_id,
     const vector<vector<shared_ptr<const OwnedPiece>>> &pieces)
@@ -112,6 +115,16 @@ int Session::CalcDamage(int actor_id, int target_id) const {
       [static_cast<int>(actor->planet())]
       [static_cast<int>(target->planet())];
   return std::max(40 * attack * pr / 100 / defense, 1);
+}
+
+Point Session::RotateDir(Point dir, int team) const {
+  auto s = kDirs.size();
+  for (int i = 0; i < s; i++) {
+    if (kDirs[i] == dir) {
+      return kDirs[(i + s / player_num_ * team) % s];
+    }
+  }
+  return dir;
 }
 
 void Session::DrawCard() {
