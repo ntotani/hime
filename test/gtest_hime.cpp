@@ -3,6 +3,7 @@
 #include "gtest/gtest.h"
 
 #include "hime/session.h"
+#include "hime/master.h"
 
 using std::make_shared;
 using std::make_unique;
@@ -24,6 +25,17 @@ using hime::PieceAction;
 
 namespace {
 
+class HimeEnv : public testing::Environment {
+ public:
+  virtual void SetUp() {
+    master.LoadSkill("");
+    master.LoadPiece("");
+  }
+  hime::Master master;
+};
+HimeEnv* env = static_cast<HimeEnv*>(
+    testing::AddGlobalTestEnvironment(new HimeEnv));
+
 class SessionContextStub : public SessionContext {
  public:
   int random() { return 0; }
@@ -32,20 +44,8 @@ class SessionContextStub : public SessionContext {
 class SessionTest : public testing::Test {
  protected:
   virtual void SetUp() {
-    auto ps1 = make_shared<const Skill>(
-        "1", "全体回復", "味方全員を@回復する", 30);
-    auto ps2 = make_shared<const Skill>(
-        "1", "一矢", "この駒を倒した相手に攻撃する", 0);
-    auto as1 = make_shared<const Skill>(
-        "1", "癒やし", "周りの駒が毎ターン@ずつ回復する", 30);
-    auto as2 = make_shared<const Skill>(
-        "1", "突撃", "攻撃力2倍で2マス前進", 0);
-    auto mp1 = make_shared<const MasterPiece>("1", "姫", Planet::kSun,
-        PieceAction::kHeal, ps1, as1, hime::Parameter(60, 50, 80));
-    auto mp2 = make_shared<const MasterPiece>("1", "浪人", Planet::kMars,
-        PieceAction::kPhysical, ps2, as2, hime::Parameter(80, 80, 60));
-    auto op1 = make_shared<const OwnedPiece>(mp1, "a");
-    auto op2 = make_shared<const OwnedPiece>(mp2, "b");
+    auto op1 = make_shared<const OwnedPiece>(env->master.piece("1"), "a");
+    auto op2 = make_shared<const OwnedPiece>(env->master.piece("3"), "b");
     vector<vector<shared_ptr<const OwnedPiece>>> pieces = {{op1}, {op2}};
     s_ = new Session(make_unique<SessionContextStub>(), 2, 1, 1, pieces);
   }
@@ -140,21 +140,9 @@ TEST_F(SessionTest, RotateDir) {
 class SessionThreeTest : public testing::Test {
  protected:
   virtual void SetUp() {
-    auto ps1 = make_shared<const Skill>(
-        "1", "全体回復", "味方全員を@回復する", 30);
-    auto ps2 = make_shared<const Skill>(
-        "1", "一矢", "この駒を倒した相手に攻撃する", 0);
-    auto as1 = make_shared<const Skill>(
-        "1", "癒やし", "周りの駒が毎ターン@ずつ回復する", 30);
-    auto as2 = make_shared<const Skill>(
-        "1", "突撃", "攻撃力2倍で2マス前進", 0);
-    auto mp1 = make_shared<const MasterPiece>("1", "姫", Planet::kSun,
-        PieceAction::kHeal, ps1, as1, hime::Parameter(60, 50, 80));
-    auto mp2 = make_shared<const MasterPiece>("1", "浪人", Planet::kMars,
-        PieceAction::kPhysical, ps2, as2, hime::Parameter(80, 80, 60));
-    auto op1 = make_shared<const OwnedPiece>(mp1, "a");
-    auto op2 = make_shared<const OwnedPiece>(mp2, "b");
-    auto op3 = make_shared<const OwnedPiece>(mp1, "c");
+    auto op1 = make_shared<const OwnedPiece>(env->master.piece("1"), "a");
+    auto op2 = make_shared<const OwnedPiece>(env->master.piece("3"), "b");
+    auto op3 = make_shared<const OwnedPiece>(env->master.piece("1"), "c");
     vector<vector<shared_ptr<const OwnedPiece>>> pieces = {{op1}, {op2}, {op3}};
     s_ = new Session(make_unique<SessionContextStub>(), 3, 1, 1, pieces);
   }
