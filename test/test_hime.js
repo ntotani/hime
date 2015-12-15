@@ -8,7 +8,7 @@ assert.equal("全体回復", enc.convert(s1.name));
 assert.equal("周りの駒が毎ターン@ずつ回復する", enc.convert(s2.desc));
 var prm = new hime.Parameter(60, 50, 80);
 assert.equal(60, prm.power);
-var mp = new hime.MasterPiece("1", enc.convert("姫", "UTF8"), hime.Planet.kSun, s1, s2, prm);
+var mp = new hime.MasterPiece("1", enc.convert("姫", "UTF8"), hime.Planet.kSun, hime.PieceAction.kHeal, s1, s2, prm);
 assert.equal("姫", enc.convert(mp.name));
 assert.equal(hime.Planet.kSun, mp.planet);
 assert.equal(30, mp.active_skill.rate);

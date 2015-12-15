@@ -25,6 +25,7 @@ using hime::OwnedPiece;
 using hime::SessionPiece;
 using hime::Parameter;
 using hime::Planet;
+using hime::PieceAction;
 using hime::Session;
 using hime::SessionContext;
 using hime::SessionContextImpl;
@@ -39,6 +40,10 @@ EMSCRIPTEN_BINDINGS(hime) {
       .value("kJupiter", Planet::kJupiter)
       .value("kVenus", Planet::kVenus)
       .value("kSaturn", Planet::kSaturn);
+  enum_<PieceAction>("PieceAction")
+      .value("kPhysical", PieceAction::kPhysical)
+      .value("kMagical", PieceAction::kMagical)
+      .value("kHeal", PieceAction::kHeal);
   class_<Skill>("Skill")
       .smart_ptr_constructor("shared_ptr<const Skill>",
           &make_shared<const Skill,
@@ -57,11 +62,13 @@ EMSCRIPTEN_BINDINGS(piece) {
       .property("resist", &Parameter::resist);
   class_<MasterPiece>("MasterPiece")
       .smart_ptr_constructor("shared_ptr<const MasterPiece>",
-          &make_shared<const MasterPiece, const string&, const string&, Planet,
+          &make_shared<const MasterPiece, const string&, const string&,
+          Planet, PieceAction,
           shared_ptr<const Skill>, shared_ptr<const Skill>, Parameter>)
       .property("id", &MasterPiece::id)
       .property("name", &MasterPiece::name)
       .property("planet", &MasterPiece::planet)
+      .property("action", &MasterPiece::action)
       .property("active_skill", &MasterPiece::active_skill)
       .property("passive_skill", &MasterPiece::passive_skill)
       .property("param", &MasterPiece::param);
