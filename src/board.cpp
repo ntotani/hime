@@ -41,5 +41,13 @@ Board::Board(int board_id) {
   }
 }
 
+bool Board::IsOutOfBounce(Point position) const {
+  return
+    position.i < 0 ||
+    static_cast<size_t>(position.i) >= tiles_.size() ||
+    position.j < 0 ||
+    static_cast<size_t>(position.j) >= tiles_[position.i].size();
+}
+
 NS_HIME_END
 

@@ -41,6 +41,13 @@ struct ActionMove : public Action {
       :Action(Type::kMove), actor_id(actor_id), from(from), to(to) {}
 };
 
+struct ActionOb : public Action {
+  const int actor_id;
+  const Point pos;
+  ActionOb(int actor_id, Point pos)
+      :Action(Type::kOb), actor_id(actor_id), pos(pos) {}
+};
+
 NS_HIME_END
 
 #endif  // INCLUDE_HIME_ACTION_H_

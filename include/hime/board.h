@@ -10,6 +10,7 @@ NS_HIME_BEGIN
 class Board {
  public:
   explicit Board(int board_id);
+  bool IsOutOfBounce(Point position) const;
   inline const std::vector<std::vector<Tile>>& tiles() const {
     return tiles_;
   }

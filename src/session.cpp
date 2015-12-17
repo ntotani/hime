@@ -75,6 +75,7 @@ vector<unique_ptr<Action>> Session::ProcessTurn(
     auto& hands = hands_[actor->team()];
     if (hands.size() <= static_cast<size_t>(cmd.card_idx)) continue;
     auto card = hands[cmd.card_idx];
+    // TODO(ntotani): chip action
     hands.erase(hands.begin() + cmd.card_idx);
     trash_[actor->team()].push_back(card);
     if (card == Card::kSkill) {
@@ -177,18 +178,17 @@ vector<unique_ptr<Action>> Session::ApplyDir(int piece_id, Point dir) {
 
 vector<unique_ptr<Action>> Session::TryMove(int piece_id, Point position) {
   vector<unique_ptr<Action>> acts;
-  // TODO(ntotani): check ob
-  /*
-  if di < 1 or di > #self.tiles or dj < 1 or dj > #self.tiles[1] or self.tiles[di][dj] == 0 then
-      -- out of bounds
-      acts[#acts + 1] = {type = "ob", actor = actor.id, i = di, j = dj}
-      actor.hp = 0
+  if (board_.IsOutOfBounce(position)) {
+    // TODO(ntotani): check is hime
+    acts.push_back(make_unique<ActionOb>(piece_id, position));
+    pieces_[piece_id]->hp_ = 0;
+    /*
       if self:isHime(actor) or not us.any(self.charas, function(e) return e.team == actor.team and e.hp > 0 end) then
           acts[#acts + 1] = {type = "end", lose = actor.team}
       end
-      return true
-  end
-  */
+    */
+    return move(acts);
+  }
   // TODO(ntotani): return if other piece
   /*
   if self:findChara(di, dj) then

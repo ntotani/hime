@@ -12,6 +12,7 @@ using std::unique_ptr;
 using std::vector;
 using hime::Action;
 using hime::ActionMove;
+using hime::ActionOb;
 using hime::MasterPiece;
 using hime::OwnedPiece;
 using hime::SessionPiece;
@@ -145,6 +146,18 @@ TEST_F(SessionTest, CalcDamageInvalid) {
 TEST_F(SessionTest, RotateDir) {
   ExpectPoint({2, 0}, s_->RotateDir({-2, 0}, 1));
   ExpectPoint({1, -1}, s_->RotateDir({-1, 1}, 1));
+}
+
+TEST_F(SessionTest, ProcessTurnOb) {
+  s_->CommitFormation({{"a", {0, 2}}});
+  auto acts = s_->ProcessTurn({{0, 0}});  // Front
+  EXPECT_EQ(1, acts.size());
+  auto act = unique_ptr<ActionOb>(
+      static_cast<ActionOb*>(acts[0].release()));
+  EXPECT_EQ(Action::Type::kOb, act->type);
+  ExpectPoint({-2, 2}, act->pos);
+  auto &p = s_->pieces()[0];
+  EXPECT_EQ(0, p->hp());
 }
 
 class SessionThreeTest : public testing::Test {
