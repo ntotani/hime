@@ -144,14 +144,8 @@ void Session::DrawCard() {
 
 vector<unique_ptr<Action>> Session::ApplyDir(int piece_id, Point dir) {
   vector<unique_ptr<Action>> acts;
-  // TODO(ntotani): rotate dir
-  /*
-    local di = dir.i * (friend.team == "red" and 1 or -1)
-    local dj = dir.j * (friend.team == "red" and 1 or -1)
-    local ni = friend.i + di
-    local nj = friend.j + dj
-  */
   auto& actor = pieces_[piece_id];
+  dir = RotateDir(dir, actor->team());
   auto dst = actor->position() + dir;
   int hit = FindPiece(dst);
   // TODO(ntotani): sniper skill
