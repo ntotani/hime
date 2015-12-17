@@ -2,6 +2,7 @@
 #define INCLUDE_HIME_HIME_H_
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #define NS_HIME_BEGIN namespace hime {
@@ -23,6 +24,16 @@ enum class Planet {
   kSaturn,
 };
 
+const std::unordered_map<std::string, Planet> kPlanetStr = {
+  {"sun", Planet::kSun},
+  {"mon", Planet::kMoon},
+  {"mar", Planet::kMars},
+  {"mer", Planet::kMercury},
+  {"jup", Planet::kJupiter},
+  {"ven", Planet::kVenus},
+  {"sat", Planet::kSaturn},
+};
+
 const std::vector<std::vector<int>> kPlanetRate = {
   {100, 100, 100, 100, 100, 100, 100},
   {100, 100, 100, 100, 100, 100, 100},
@@ -37,6 +48,12 @@ enum class PieceAction {
   kPhysical = 0,
   kMagical,
   kHeal,
+};
+
+const std::unordered_map<std::string, PieceAction> kPieceActionStr = {
+  {"phys", PieceAction::kPhysical},
+  {"magi", PieceAction::kMagical},
+  {"heal", PieceAction::kHeal},
 };
 
 class Skill {

@@ -28,13 +28,23 @@ namespace {
 class HimeEnv : public testing::Environment {
  public:
   virtual void SetUp() {
-    master.LoadSkill("");
-    master.LoadPiece("[80]");
+    master.LoadSkill("a1,全体回復,味方全員を@回復する,30\n"
+      "a3,突撃,攻撃力2倍で2マス前進,0\n"
+      "p1,癒やし,周りの駒が毎ターン@ずつ回復する,30\n"
+      "p3,一矢,この駒を倒した相手に攻撃する,0");
+    master.LoadPiece("1, 姫 ,sun,heal,a1,p1,60,50,80\n"
+        "3,浪人,mar,phys,a3,p3,80,80,60");
   }
   hime::Master master;
 };
 HimeEnv* env = static_cast<HimeEnv*>(
     testing::AddGlobalTestEnvironment(new HimeEnv));
+
+class PieceTest : public testing::Test {};
+
+TEST_F(PieceTest, Constructor) {
+  EXPECT_EQ("姫", env->master.piece("1")->name());
+}
 
 class SessionContextStub : public SessionContext {
  public:

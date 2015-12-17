@@ -118,7 +118,7 @@ int Session::CalcDamage(int actor_id, int target_id) const {
 }
 
 Point Session::RotateDir(Point dir, int team) const {
-  auto s = kDirs.size();
+  auto s = static_cast<int>(kDirs.size());
   for (int i = 0; i < s; i++) {
     if (kDirs[i] == dir) {
       return kDirs[(i + s / player_num_ * team) % s];

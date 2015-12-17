@@ -46,7 +46,7 @@ TEST_SRCS = $(shell find $(TEST_DIR) -name '*.cpp')
 TEST_OBJS  = $(addprefix $(OBJ_DIR)/, $(notdir $(TEST_SRCS:.cpp=.o)))
 DEPS += $(TEST_OBJS:.o=.d)
 LIBS += -L$(LIB_DIR)
-LIBS += -lhime -lyaml-cpp
+LIBS += -lhime
 TEST_TARGET = $(BIN_DIR)/gtest_hime
 
 CPPFLAGS += -isystem $(GTEST_DIR)/include
