@@ -13,6 +13,7 @@ using std::vector;
 using hime::Action;
 using hime::ActionMove;
 using hime::ActionOb;
+using hime::ActionAttack;
 using hime::MasterPiece;
 using hime::OwnedPiece;
 using hime::SessionPiece;
@@ -29,11 +30,14 @@ namespace {
 class HimeEnv : public testing::Environment {
  public:
   virtual void SetUp() {
-    master.LoadSkill("a1,全体回復,味方全員を@回復する,30\n"
+    master.LoadSkill("a0,dummy,dummy skill,0\n"
+      "a1,全体回復,味方全員を@回復する,30\n"
       "a3,突撃,攻撃力2倍で2マス前進,0\n"
+      "p0,dummy,dummy skill,0\n"
       "p1,癒やし,周りの駒が毎ターン@ずつ回復する,30\n"
       "p3,一矢,この駒を倒した相手に攻撃する,0");
-    master.LoadPiece("1, 姫 ,sun,heal,a1,p1,60,50,80\n"
+    master.LoadPiece("0,dummy,mar,phys,a0,p0,40,40,40\n"
+        "1,姫,sun,heal,a1,p1,60,50,80\n"
         "3,浪人,mar,phys,a3,p3,80,80,60");
   }
   hime::Master master;
@@ -55,8 +59,8 @@ class SessionContextStub : public SessionContext {
 class SessionTest : public testing::Test {
  protected:
   virtual void SetUp() {
-    auto op1 = make_shared<const OwnedPiece>(env->master.piece("1"), "a");
-    auto op2 = make_shared<const OwnedPiece>(env->master.piece("3"), "b");
+    auto op1 = make_shared<const OwnedPiece>(env->master.piece("0"), "a");
+    auto op2 = make_shared<const OwnedPiece>(env->master.piece("0"), "b");
     vector<vector<shared_ptr<const OwnedPiece>>> pieces = {{op1}, {op2}};
     s_ = new Session(make_unique<SessionContextStub>(), 2, 1, 1, pieces);
   }
@@ -135,7 +139,7 @@ TEST_F(SessionTest, FindPiece) {
 
 TEST_F(SessionTest, CalcDamage) {
   s_->CommitFormation({{"a", {6, 2}}, {"b", {8, 2}}});
-  EXPECT_EQ(128, s_->CalcDamage(1, 0));
+  EXPECT_EQ(40, s_->CalcDamage(1, 0));
 }
 
 TEST_F(SessionTest, CalcDamageInvalid) {
@@ -158,6 +162,23 @@ TEST_F(SessionTest, ProcessTurnOb) {
   ExpectPoint({-2, 2}, act->pos);
   auto &p = s_->pieces()[0];
   EXPECT_EQ(0, p->hp());
+}
+
+TEST_F(SessionTest, ProcessTurnAttack) {
+  s_->CommitFormation({{"a", {8, 2}}, {"b", {6, 2}}});
+  auto acts = s_->ProcessTurn({{0, 0}});  // Front
+  EXPECT_EQ(1, acts.size());
+  auto act = unique_ptr<ActionAttack>(
+      static_cast<ActionAttack*>(acts[0].release()));
+  EXPECT_EQ(Action::Type::kAttack, act->type);
+  EXPECT_EQ(0, act->actor_id);
+  EXPECT_EQ(1, act->target_id);
+  ExpectPoint({8, 2}, act->from);
+  ExpectPoint({6, 2}, act->to);
+  EXPECT_EQ(100, act->hp);
+  EXPECT_EQ(40, act->dmg);
+  auto &p = s_->pieces()[1];
+  EXPECT_EQ(60, p->hp());
 }
 
 class SessionThreeTest : public testing::Test {

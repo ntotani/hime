@@ -48,6 +48,17 @@ struct ActionOb : public Action {
       :Action(Type::kOb), actor_id(actor_id), pos(pos) {}
 };
 
+struct ActionAttack : public Action {
+  const int actor_id;
+  const int target_id;
+  const Point from, to;
+  const int hp, dmg;
+  ActionAttack(int actor_id, int target_id,
+      Point from, Point to, int hp, int dmg)
+      :Action(Type::kAttack), actor_id(actor_id), target_id(target_id),
+      from(from), to(to), hp(hp), dmg(dmg) {}
+};
+
 NS_HIME_END
 
 #endif  // INCLUDE_HIME_ACTION_H_

@@ -166,7 +166,7 @@ vector<unique_ptr<Action>> Session::ApplyDir(int piece_id, Point dir) {
     if (actor->action() == PieceAction::kHeal) {
       // TODO(ntotani): heal
     } else {
-      // TODO(ntotani): attack
+      ret = Attack(piece_id, hit);
     }
   } else {
     ret = TryMove(piece_id, pieces_[piece_id]->position() + dir);
@@ -257,8 +257,66 @@ vector<unique_ptr<Action>> Session::Attack(int actor_id, int target_id) {
 
 vector<unique_ptr<Action>> Session::Attack(
     int actor_id, int target_id, int damage) {
+  vector<unique_ptr<Action>> acts;
+  // TODO(ntotani): skill 仁王
+  /*
+  for _, e in ipairs(self:getDirs(target.team)) do
+      local c = self:findChara(target.i + e.i, target.j + e.j)
+      if c and c.pskill == "10" and c.team == target.team and c.id ~= actor.id then
+          table.insert(acts, {type = "pskill", actor = c.id, id = "10"})
+          table.insert(acts, {
+              type = "swap",
+              actor = c.id,
+              target = target.id,
+              fi = c.i,
+              fj = c.j,
+              ti = target.i,
+              tj = target.j,
+          })
+          local ti, tj = target.i, target.j
+          if self:commitMove(target, c.i, c.j, acts) then return end
+          if self:commitMove(c, ti, tj, acts) then return end
+          target = c
+          break
+      end
+  end
+  */
+  // TODO(ntotani): skill 保険
+  /*
+  if target.pskill == "7" and target.hp >= 100 and dmg > target.hp then
+      table.insert(acts, {type = "pskill", actor = target.id, id = "7"})
+      dmg = 99
+  end
+  */
+  acts.push_back(make_unique<ActionAttack>(actor_id, target_id,
+        pieces_[actor_id]->position(), pieces_[target_id]->position(),
+        pieces_[target_id]->hp(), damage));
+  pieces_[target_id]->hp_ = std::max(pieces_[target_id]->hp() - damage, 0);
   // TODO(ntotani): impl
+  /*
+  if target.hp <= 0 then
+        if self:isHime(target) or not us.any(self.charas, function(e) return e.team == target.team and e.hp > 0 end) then
+            table.insert(acts, {type = "end", lose = target.team})
+        elseif self:isNextTo(actor, target) then
+            if target.pskill == "3" and actor.hp > 0 then
+                table.insert(acts, {type = "pskill", actor = target.id, id = "3"})
+                self:attack(target, actor, nil, acts)
+            end
+            if actor.pskill == "4" and actor.hp > 0 then
+                table.insert(acts, {type = "pskill", actor = actor.id, id = "4"})
+                actor.pump.power = actor.pump.power * 1.5
+            end
+            if actor.hp > 0 then
+                self:moveTo(actor, target.i, target.j, acts)
+            end
+        end
+    elseif target.pskill == "9" and self:isNextTo(target, actor) then
+        table.insert(acts, {type = "pskill", actor = target.id, id = "9"})
+        self:moveTo(actor, actor.i + (actor.i - target.i), actor.j + (actor.j - target.j), acts)
+    end
   return {};
+  */
+  return move(acts);
 }
 
 NS_HIME_END
