@@ -107,6 +107,19 @@ bool Session::IsHime(int piece_id) const {
   return actor->owned()->master()->id() == "1";
 }
 
+bool Session::IsDrop(int team_id) const {
+  int hpSum = 0;
+  for (auto& e : pieces_) {
+    if (e->team() == team_id) {
+      if (IsHime(e->id()) && e->hp() <= 0) {
+        return true;
+      }
+      hpSum += e->hp();
+    }
+  }
+  return hpSum <= 0;
+}
+
 int Session::CalcDamage(int actor_id, int target_id) const {
   if (pieces_.size() <= static_cast<size_t>(actor_id)
       || pieces_.size() <= static_cast<size_t>(target_id)) {
@@ -186,15 +199,9 @@ vector<unique_ptr<Action>> Session::TryMove(int piece_id, Point position) {
   if (board_.IsOutOfBounce(position)) {
     acts.push_back(make_unique<ActionOb>(piece_id, position));
     pieces_[piece_id]->hp_ = 0;
-    // TODO(ntotani): check any piece
-    if (IsHime(piece_id)) {
+    if (IsDrop(pieces_[piece_id]->team())) {
       acts.push_back(make_unique<ActionDrop>(pieces_[piece_id]->team()));
     }
-    /*
-      if self:isHime(actor) or not us.any(self.charas, function(e) return e.team == actor.team and e.hp > 0 end) then
-          acts[#acts + 1] = {type = "end", lose = actor.team}
-      end
-    */
     return move(acts);
   }
   // TODO(ntotani): return if other piece

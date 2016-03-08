@@ -50,6 +50,7 @@ class Session {
       const std::vector<Command>& commands);
   int FindPiece(Point position) const;
   bool IsHime(int piece_id) const;
+  bool IsDrop(int team_id) const;
   int CalcDamage(int actor_id, int target_id) const;
   Point RotateDir(Point dir, int team) const;
 

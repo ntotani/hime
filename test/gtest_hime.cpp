@@ -162,13 +162,17 @@ TEST_F(SessionTest, RotateDir) {
 TEST_F(SessionTest, ProcessTurnOb) {
   s_->CommitFormation({{"a", {0, 2}}});
   auto acts = s_->ProcessTurn({{0, 0}});  // Front
-  EXPECT_EQ(2, acts.size());
+  EXPECT_EQ(3, acts.size());
   auto act = unique_ptr<ActionOb>(
       static_cast<ActionOb*>(acts[1].release()));
   EXPECT_EQ(Action::Type::kOb, act->type);
   ExpectPoint({-2, 2}, act->pos);
   auto &p = s_->pieces()[0];
   EXPECT_EQ(0, p->hp());
+  auto drop = unique_ptr<ActionDrop>(
+      static_cast<ActionDrop*>(acts[2].release()));
+  EXPECT_EQ(Action::Type::kDrop, drop->type);
+  EXPECT_EQ(0, drop->team_id);
 }
 
 TEST_F(SessionTest, ProcessTurnAttack) {
