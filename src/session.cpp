@@ -75,7 +75,7 @@ vector<unique_ptr<Action>> Session::ProcessTurn(
     auto& hands = hands_[actor->team()];
     if (hands.size() <= static_cast<size_t>(cmd.card_idx)) continue;
     auto card = hands[cmd.card_idx];
-    // TODO(ntotani): chip action
+    acts.push_back(make_unique<ActionChip>(cmd.piece_id, cmd.card_idx));
     hands.erase(hands.begin() + cmd.card_idx);
     trash_[actor->team()].push_back(card);
     if (card == Card::kSkill) {

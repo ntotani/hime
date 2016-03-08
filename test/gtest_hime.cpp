@@ -11,6 +11,7 @@ using std::shared_ptr;
 using std::unique_ptr;
 using std::vector;
 using hime::Action;
+using hime::ActionChip;
 using hime::ActionMove;
 using hime::ActionOb;
 using hime::ActionAttack;
@@ -103,9 +104,14 @@ TEST_F(SessionTest, CommitFormation) {
 TEST_F(SessionTest, ProcessTurn) {
   s_->CommitFormation({{"a", {4, 2}}});
   auto acts = s_->ProcessTurn({{0, 0}});  // Front
-  EXPECT_EQ(1, acts.size());
+  EXPECT_EQ(2, acts.size());
+  auto chip = unique_ptr<ActionChip>(
+      static_cast<ActionChip*>(acts[0].release()));
+  EXPECT_EQ(Action::Type::kChip, chip->type);
+  EXPECT_EQ(0, chip->actor_id);
+  EXPECT_EQ(0, chip->chip_idx);
   auto act = unique_ptr<ActionMove>(
-      static_cast<ActionMove*>(acts[0].release()));
+      static_cast<ActionMove*>(acts[1].release()));
   EXPECT_EQ(Action::Type::kMove, act->type);
   ExpectPoint({4, 2}, act->from);
   ExpectPoint({2, 2}, act->to);
@@ -155,9 +161,9 @@ TEST_F(SessionTest, RotateDir) {
 TEST_F(SessionTest, ProcessTurnOb) {
   s_->CommitFormation({{"a", {0, 2}}});
   auto acts = s_->ProcessTurn({{0, 0}});  // Front
-  EXPECT_EQ(1, acts.size());
+  EXPECT_EQ(2, acts.size());
   auto act = unique_ptr<ActionOb>(
-      static_cast<ActionOb*>(acts[0].release()));
+      static_cast<ActionOb*>(acts[1].release()));
   EXPECT_EQ(Action::Type::kOb, act->type);
   ExpectPoint({-2, 2}, act->pos);
   auto &p = s_->pieces()[0];
@@ -167,9 +173,9 @@ TEST_F(SessionTest, ProcessTurnOb) {
 TEST_F(SessionTest, ProcessTurnAttack) {
   s_->CommitFormation({{"a", {8, 2}}, {"b", {6, 2}}});
   auto acts = s_->ProcessTurn({{0, 0}});  // Front
-  EXPECT_EQ(1, acts.size());
+  EXPECT_EQ(2, acts.size());
   auto act = unique_ptr<ActionAttack>(
-      static_cast<ActionAttack*>(acts[0].release()));
+      static_cast<ActionAttack*>(acts[1].release()));
   EXPECT_EQ(Action::Type::kAttack, act->type);
   EXPECT_EQ(0, act->actor_id);
   EXPECT_EQ(1, act->target_id);
