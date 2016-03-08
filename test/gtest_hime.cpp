@@ -15,6 +15,7 @@ using hime::ActionChip;
 using hime::ActionMove;
 using hime::ActionOb;
 using hime::ActionAttack;
+using hime::ActionDrop;
 using hime::MasterPiece;
 using hime::OwnedPiece;
 using hime::SessionPiece;
@@ -185,6 +186,34 @@ TEST_F(SessionTest, ProcessTurnAttack) {
   EXPECT_EQ(40, act->dmg);
   auto &p = s_->pieces()[1];
   EXPECT_EQ(60, p->hp());
+}
+
+class SessionHimeTest : public testing::Test {
+ protected:
+  virtual void SetUp() {
+    auto op1 = make_shared<const OwnedPiece>(env->master.piece("1"), "a");
+    auto op2 = make_shared<const OwnedPiece>(env->master.piece("0"), "b");
+    vector<vector<shared_ptr<const OwnedPiece>>> pieces = {{op1}, {op2}};
+    s_ = new Session(make_unique<SessionContextStub>(), 2, 1, 1, pieces);
+  }
+  virtual void TearDown() {
+    delete s_;
+  }
+  void ExpectPoint(const Point& a, const Point& b) {
+    EXPECT_EQ(a.i, b.i);
+    EXPECT_EQ(a.j, b.j);
+  }
+  Session* s_;
+};
+
+TEST_F(SessionHimeTest, Drop) {
+  s_->CommitFormation({{"a", {0, 2}}});
+  auto acts = s_->ProcessTurn({{0, 0}});  // Front
+  EXPECT_EQ(3, acts.size());
+  auto act = unique_ptr<ActionDrop>(
+      static_cast<ActionDrop*>(acts[2].release()));
+  EXPECT_EQ(Action::Type::kDrop, act->type);
+  EXPECT_EQ(0, act->team_id);
 }
 
 class SessionThreeTest : public testing::Test {

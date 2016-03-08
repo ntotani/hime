@@ -16,7 +16,7 @@ struct Action {
     kHeal,
     kPskill,
     kEvo,
-    kEnd,
+    kDrop,
   };
   const Type type;
   explicit Action(Type type):type(type) {}
@@ -57,6 +57,12 @@ struct ActionAttack : public Action {
       Point from, Point to, int hp, int dmg)
       :Action(Type::kAttack), actor_id(actor_id), target_id(target_id),
       from(from), to(to), hp(hp), dmg(dmg) {}
+};
+
+struct ActionDrop : public Action {
+  const int team_id;
+  explicit ActionDrop(int team_id)
+      :Action(Type::kDrop), team_id(team_id) {}
 };
 
 NS_HIME_END

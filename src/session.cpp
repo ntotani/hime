@@ -102,6 +102,11 @@ int Session::FindPiece(Point position) const {
   return -1;
 }
 
+bool Session::IsHime(int piece_id) const {
+  auto& actor = pieces_[piece_id];
+  return actor->owned()->master()->id() == "1";
+}
+
 int Session::CalcDamage(int actor_id, int target_id) const {
   if (pieces_.size() <= static_cast<size_t>(actor_id)
       || pieces_.size() <= static_cast<size_t>(target_id)) {
@@ -179,9 +184,12 @@ vector<unique_ptr<Action>> Session::ApplyDir(int piece_id, Point dir) {
 vector<unique_ptr<Action>> Session::TryMove(int piece_id, Point position) {
   vector<unique_ptr<Action>> acts;
   if (board_.IsOutOfBounce(position)) {
-    // TODO(ntotani): check is hime
     acts.push_back(make_unique<ActionOb>(piece_id, position));
     pieces_[piece_id]->hp_ = 0;
+    // TODO(ntotani): check any piece
+    if (IsHime(piece_id)) {
+      acts.push_back(make_unique<ActionDrop>(pieces_[piece_id]->team()));
+    }
     /*
       if self:isHime(actor) or not us.any(self.charas, function(e) return e.team == actor.team and e.hp > 0 end) then
           acts[#acts + 1] = {type = "end", lose = actor.team}
