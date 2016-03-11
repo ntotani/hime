@@ -1,16 +1,21 @@
 #include "hime/board.h"
 
+#include <vector>
 
 NS_HIME_BEGIN
 
-using Tile::kNone;
-using Tile::kNormal;
-using Tile::kEvolution;
+using std::vector;
+using std::unique_ptr;
+using std::make_unique;
+using Tile::Type::kNone;
+using Tile::Type::kNormal;
+using Tile::Type::kEvolution;
 
 Board::Board(int board_id) {
+  vector<vector<Tile::Type>> types;
   switch (board_id) {
     case 0:
-      tiles_ = {
+      types = {
         {kNone, kNone, kNormal, kNone, kNone},
         {kNone, kNormal, kNone, kNormal, kNone},
         {kNormal, kNone, kNormal, kNone, kNormal},
@@ -23,7 +28,7 @@ Board::Board(int board_id) {
       };
       break;
     default:
-      tiles_ = {
+      types = {
         {kNone, kNone, kNone, kNormal, kNone, kNone, kNone},
         {kNone, kNone, kNormal, kNone, kNormal, kNone, kNone},
         {kNone, kNormal, kNone, kNormal, kNone, kEvolution, kNone},
@@ -38,6 +43,13 @@ Board::Board(int board_id) {
         {kNone, kNone, kNormal, kNone, kNormal, kNone, kNone},
         {kNone, kNone, kNone, kNormal, kNone, kNone, kNone}
       };
+  }
+  for (auto &row : types) {
+    vector<unique_ptr<Tile>> line;
+    for (auto e : row) {
+      line.push_back(make_unique<Tile>(e));
+    }
+    tiles_.push_back(move(line));
   }
 }
 

@@ -77,7 +77,7 @@ class SessionTest : public testing::Test {
 };
 
 TEST_F(SessionTest, Constructor) {
-  EXPECT_EQ(hime::Tile::kNone, s_->board().tiles()[0][0]);
+  EXPECT_EQ(hime::Tile::Type::kNone, s_->board().tiles()[0][0]->type);
   EXPECT_EQ(hime::Card::kFront, s_->decks()[0][0]);
   EXPECT_EQ(0, s_->pieces().size());
   EXPECT_EQ(2, s_->decks().size());

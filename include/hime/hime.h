@@ -75,12 +75,6 @@ class Skill {
   DISALLOW_COPY_AND_ASSIGN(Skill);
 };
 
-enum class Tile {
-  kNone = 0,
-  kNormal,
-  kEvolution,
-};
-
 enum class Card {
   kFront = 0,
   kFrontR,
