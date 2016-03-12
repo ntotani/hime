@@ -15,6 +15,7 @@ using hime::ActionChip;
 using hime::ActionMove;
 using hime::ActionOb;
 using hime::ActionAttack;
+using hime::ActionHeal;
 using hime::ActionDrop;
 using hime::MasterPiece;
 using hime::OwnedPiece;
@@ -241,6 +242,23 @@ TEST_F(SessionHimeTest, HimeDead) {
       static_cast<ActionDrop*>(acts[2].release()));
   EXPECT_EQ(Action::Type::kDrop, act->type);
   EXPECT_EQ(0, act->team_id);
+}
+
+TEST_F(SessionHimeTest, HimeHeal) {
+  s_->CommitFormation({
+      {"a", {{8, 2}, 100, Parameter(100)}},
+      {"b", {{6, 2},   1, Parameter(100)}}});
+  auto acts = s_->ProcessTurn({{0, 0}});  // Front
+  auto act = unique_ptr<ActionHeal>(
+      static_cast<ActionHeal*>(acts[1].release()));
+  EXPECT_EQ(Action::Type::kHeal, act->type);
+  EXPECT_EQ(0, act->actor_id);
+  EXPECT_EQ(1, act->target_id);
+  ExpectPoint({8, 2}, act->from);
+  ExpectPoint({6, 2}, act->to);
+  EXPECT_EQ(1, act->hp);
+  EXPECT_EQ(60, act->gain);
+  EXPECT_EQ(61, s_->pieces()[1]->hp());
 }
 
 class SessionThreeTest : public testing::Test {

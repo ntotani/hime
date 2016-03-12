@@ -75,6 +75,9 @@ class Session {
   std::vector<std::unique_ptr<Action>> Attack(int actor_id, int target_id);
   std::vector<std::unique_ptr<Action>> Attack(
       int actor_id, int target_id, int damage);
+  std::vector<std::unique_ptr<Action>> Heal(int actor_id, int target_id);
+  std::vector<std::unique_ptr<Action>> Heal(
+      int actor_id, int target_id, int gain);
 
   const int player_num_;
   const std::vector<std::vector<std::shared_ptr<const OwnedPiece>>>

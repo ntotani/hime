@@ -200,7 +200,7 @@ vector<unique_ptr<Action>> Session::ApplyDir(int piece_id, Point dir) {
   vector<unique_ptr<Action>> ret;
   if (hit != -1) {
     if (actor->action() == PieceAction::kHeal) {
-      // TODO(ntotani): heal
+      ret = Heal(piece_id, hit);
     } else {
       ret = Attack(piece_id, hit);
     }
@@ -347,6 +347,21 @@ vector<unique_ptr<Action>> Session::Attack(
     end
   return {};
   */
+  return move(acts);
+}
+
+vector<unique_ptr<Action>> Session::Heal(int actor_id, int target_id) {
+  int gain = CalcDamage(actor_id, target_id);
+  return move(Heal(actor_id, target_id, gain));
+}
+
+vector<unique_ptr<Action>> Session::Heal(
+    int actor_id, int target_id, int gain) {
+  vector<unique_ptr<Action>> acts;
+  acts.push_back(make_unique<ActionHeal>(actor_id, target_id,
+        pieces_[actor_id]->position(), pieces_[target_id]->position(),
+        pieces_[target_id]->hp(), gain));
+  pieces_[target_id]->hp_ = std::min(pieces_[target_id]->hp() + gain, 100);
   return move(acts);
 }
 

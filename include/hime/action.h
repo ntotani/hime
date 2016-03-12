@@ -59,6 +59,17 @@ struct ActionAttack : public Action {
       from(from), to(to), hp(hp), dmg(dmg) {}
 };
 
+struct ActionHeal : public Action {
+  const int actor_id;
+  const int target_id;
+  const Point from, to;
+  const int hp, gain;
+  ActionHeal(int actor_id, int target_id,
+      Point from, Point to, int hp, int gain)
+      :Action(Type::kHeal), actor_id(actor_id), target_id(target_id),
+      from(from), to(to), hp(hp), gain(gain) {}
+};
+
 struct ActionDrop : public Action {
   const int team_id;
   explicit ActionDrop(int team_id)
