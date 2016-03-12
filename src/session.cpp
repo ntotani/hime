@@ -221,18 +221,13 @@ vector<unique_ptr<Action>> Session::TryMove(int piece_id, Point position) {
 vector<unique_ptr<Action>> Session::CommitMove(int piece_id, Point position) {
   pieces_[piece_id]->position_ = position;
   vector<unique_ptr<Action>> acts;
-  // TODO(ntotani): check actor is hime
-  /*
-  if self:isHime(actor) then
-      if self.tiles[di][dj] == Shogi.BLUE_CAMP and actor.team == "red" then
-          acts[#acts + 1] = {type = "end", lose = "blue"}
-          return true
-      elseif self.tiles[di][dj] == Shogi.RED_CAMP and actor.team == "blue" then
-          acts[#acts + 1] = {type = "end", lose = "red"}
-          return true
-      end
-  end
-  */
+  auto &tile = board_.tiles()[position.i][position.j];
+  if (IsHime(piece_id) && tile->type == Tile::Type::kCamp) {
+    auto camp = static_cast<TileCamp*>(tile.get());
+    if (camp->team_id != pieces_[piece_id]->team()) {
+      acts.push_back(make_unique<ActionDrop>(camp->team_id));
+    }
+  }
   // TODO(ntotani): check evo
   /*
   if (self.tiles[di][dj] == Shogi.BLUE_EVO and actor.team == "red" or

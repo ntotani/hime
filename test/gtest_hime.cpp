@@ -220,6 +220,16 @@ TEST_F(SessionHimeTest, Drop) {
   EXPECT_EQ(0, act->team_id);
 }
 
+TEST_F(SessionHimeTest, Camp) {
+  s_->CommitFormation({{"a", {2, 2}}});
+  auto acts = s_->ProcessTurn({{0, 0}});  // Front
+  EXPECT_EQ(3, acts.size());
+  auto act = unique_ptr<ActionDrop>(
+      static_cast<ActionDrop*>(acts[2].release()));
+  EXPECT_EQ(Action::Type::kDrop, act->type);
+  EXPECT_EQ(1, act->team_id);
+}
+
 class SessionThreeTest : public testing::Test {
  protected:
   virtual void SetUp() {

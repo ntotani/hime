@@ -12,9 +12,16 @@ struct Tile {
     kNone = 0,
     kNormal,
     kEvolution,
+    kCamp,
   };
   const Type type;
   explicit Tile(Type type):type(type) {}
+};
+
+struct TileCamp : public Tile {
+  const int team_id;
+  explicit TileCamp(int team_id)
+      :Tile(Type::kCamp), team_id(team_id) {}
 };
 
 class Board {
