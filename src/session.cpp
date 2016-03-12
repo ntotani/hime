@@ -302,11 +302,11 @@ vector<unique_ptr<Action>> Session::Attack(
         pieces_[actor_id]->position(), pieces_[target_id]->position(),
         pieces_[target_id]->hp(), damage));
   pieces_[target_id]->hp_ = std::max(pieces_[target_id]->hp() - damage, 0);
-  // TODO(ntotani): impl
-  /*
-  if target.hp <= 0 then
-        if self:isHime(target) or not us.any(self.charas, function(e) return e.team == target.team and e.hp > 0 end) then
-            table.insert(acts, {type = "end", lose = target.team})
+  if (pieces_[target_id]->hp() <= 0) {
+    if (IsDrop(pieces_[target_id]->team())) {
+      acts.push_back(make_unique<ActionDrop>(pieces_[target_id]->team()));
+    }
+    /*
         elseif self:isNextTo(actor, target) then
             if target.pskill == "3" and actor.hp > 0 then
                 table.insert(acts, {type = "pskill", actor = target.id, id = "3"})
@@ -320,6 +320,9 @@ vector<unique_ptr<Action>> Session::Attack(
                 self:moveTo(actor, target.i, target.j, acts)
             end
         end
+        */
+  }
+  /*
     elseif target.pskill == "9" and self:isNextTo(target, actor) then
         table.insert(acts, {type = "pskill", actor = target.id, id = "9"})
         self:moveTo(actor, actor.i + (actor.i - target.i), actor.j + (actor.j - target.j), acts)

@@ -39,6 +39,7 @@ class HimeEnv : public testing::Environment {
       "p1,癒やし,周りの駒が毎ターン@ずつ回復する,30\n"
       "p3,一矢,この駒を倒した相手に攻撃する,0");
     master.LoadPiece("0,dummy,mar,phys,a0,p0,40,40,40\n"
+        "0a,dummy,mar,phys,a0,p0,1000,40,40\n"
         "1,姫,sun,heal,a1,p1,60,50,80\n"
         "3,浪人,mar,phys,a3,p3,80,80,60");
   }
@@ -196,7 +197,7 @@ class SessionHimeTest : public testing::Test {
  protected:
   virtual void SetUp() {
     auto op1 = make_shared<const OwnedPiece>(env->master.piece("1"), "a");
-    auto op2 = make_shared<const OwnedPiece>(env->master.piece("0"), "b");
+    auto op2 = make_shared<const OwnedPiece>(env->master.piece("0a"), "b");
     vector<vector<shared_ptr<const OwnedPiece>>> pieces = {{op1}, {op2}};
     s_ = new Session(make_unique<SessionContextStub>(), 2, 1, 1, pieces);
   }
@@ -228,6 +229,16 @@ TEST_F(SessionHimeTest, Camp) {
       static_cast<ActionDrop*>(acts[2].release()));
   EXPECT_EQ(Action::Type::kDrop, act->type);
   EXPECT_EQ(1, act->team_id);
+}
+
+TEST_F(SessionHimeTest, HimeDead) {
+  s_->CommitFormation({{"a", {8, 2}}, {"b", {6, 2}}});
+  auto acts = s_->ProcessTurn({{1, 0}});  // Front
+  EXPECT_EQ(3, acts.size());
+  auto act = unique_ptr<ActionDrop>(
+      static_cast<ActionDrop*>(acts[2].release()));
+  EXPECT_EQ(Action::Type::kDrop, act->type);
+  EXPECT_EQ(0, act->team_id);
 }
 
 class SessionThreeTest : public testing::Test {
