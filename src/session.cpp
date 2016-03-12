@@ -66,6 +66,24 @@ bool Session::CommitFormation(const unordered_map<string, Point>& formation) {
   return false;
 }
 
+bool Session::CommitFormation(
+    const unordered_map<string, SessionPieceState>& formation) {
+  int team_id = 0;
+  int piece_id = 0;
+  for (auto &pieces : owned_pieces_) {
+    for (auto e : pieces) {
+      if (formation.find(e->id()) != formation.end()) {
+        pieces_.push_back(make_unique<SessionPiece>(e, piece_id, team_id,
+              formation.at(e->id())));
+        ++piece_id;
+      }
+    }
+    ++team_id;
+  }
+  DrawCard();
+  return false;
+}
+
 vector<unique_ptr<Action>> Session::ProcessTurn(
     const vector<Command>& commands) {
   vector<unique_ptr<Action>> acts;

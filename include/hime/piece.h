@@ -10,6 +10,8 @@ NS_HIME_BEGIN
 
 struct Parameter {
   const int power, defense, resist;
+  explicit Parameter(int value)
+      :power(value), defense(value), resist(value) {}
   Parameter(int power, int defense, int resist)
       :power(power), defense(defense), resist(resist) {}
   Parameter operator*(const Parameter& rhs) const {
@@ -70,6 +72,12 @@ class OwnedPiece {
   DISALLOW_COPY_AND_ASSIGN(OwnedPiece);
 };
 
+struct SessionPieceState {
+  const Point position;
+  const int hp;
+  const Parameter pump;
+};
+
 class Session;
 
 class SessionPiece {
@@ -79,7 +87,12 @@ class SessionPiece {
   SessionPiece(std::shared_ptr<const OwnedPiece> owned,
       int id, int team, Point position)
       :owned_(owned), id_(id), team_(team), position_(position), hp_(100),
-      pump_(100, 100, 100) {
+      pump_(100) {
+  }
+  SessionPiece(std::shared_ptr<const OwnedPiece> owned,
+      int id, int team, SessionPieceState state)
+      :owned_(owned), id_(id), team_(team),
+      position_(state.position), hp_(state.hp), pump_(state.pump) {
   }
   inline std::shared_ptr<const OwnedPiece> owned() const { return owned_; }
   inline int id() const { return id_; }

@@ -46,6 +46,8 @@ class Session {
 
   bool CommitFormation(
       const std::unordered_map<std::string, Point>& formation);
+  bool CommitFormation(
+      const std::unordered_map<std::string, SessionPieceState>& formation);
   std::vector<std::unique_ptr<Action>> ProcessTurn(
       const std::vector<Command>& commands);
   int FindPiece(Point position) const;
