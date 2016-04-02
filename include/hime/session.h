@@ -92,6 +92,17 @@ class Session {
   DISALLOW_COPY_AND_ASSIGN(Session);
 };
 
+class SessionBuilder {
+ public:
+  SessionBuilder(int seed, int player_num, int board_id, int deck_id);
+  SessionBuilder& PushPiece(std::shared_ptr<const OwnedPiece>, int team);
+  std::unique_ptr<Session> Build();
+ private:
+  int seed_, player_num_, board_id_, deck_id_;
+  std::vector<std::vector<std::shared_ptr<const OwnedPiece>>> pieces_;
+  DISALLOW_COPY_AND_ASSIGN(SessionBuilder);
+};
+
 NS_HIME_END
 
 #endif  // INCLUDE_HIME_SESSION_H_

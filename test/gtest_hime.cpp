@@ -22,6 +22,7 @@ using hime::OwnedPiece;
 using hime::SessionPiece;
 using hime::Skill;
 using hime::Session;
+using hime::SessionBuilder;
 using hime::SessionContext;
 using hime::SessionContextImpl;
 using hime::Planet;
@@ -88,6 +89,23 @@ TEST_F(SessionTest, Constructor) {
   EXPECT_EQ(0, s_->hands()[0].size());
   EXPECT_EQ(2, s_->trash().size());
   EXPECT_EQ(0, s_->trash()[0].size());
+}
+
+TEST_F(SessionTest, Builder) {
+  SessionBuilder builder(0, 2, 1, 1);
+  builder
+    .PushPiece(s_->owned_pieces()[0][0], 0)
+    .PushPiece(s_->owned_pieces()[1][0], 1);
+  auto s = builder.Build();
+  EXPECT_EQ(hime::Tile::Type::kNone, s->board().tiles()[0][0]->type);
+  EXPECT_EQ(hime::Card::kFront, s->decks()[0][0]);
+  EXPECT_EQ(0, s->pieces().size());
+  EXPECT_EQ(2, s->decks().size());
+  EXPECT_EQ(12, s->decks()[0].size());
+  EXPECT_EQ(2, s->hands().size());
+  EXPECT_EQ(0, s->hands()[0].size());
+  EXPECT_EQ(2, s->trash().size());
+  EXPECT_EQ(0, s->trash()[0].size());
 }
 
 TEST_F(SessionTest, CommitFormation) {

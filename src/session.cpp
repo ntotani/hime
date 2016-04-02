@@ -365,5 +365,22 @@ vector<unique_ptr<Action>> Session::Heal(
   return move(acts);
 }
 
+SessionBuilder::SessionBuilder(
+    int seed, int player_num, int board_id, int deck_id)
+  :seed_(seed), player_num_(player_num), board_id_(board_id), deck_id_(deck_id),
+  pieces_(vector<vector<shared_ptr<const OwnedPiece>>>(player_num)) {
+}
+
+SessionBuilder& SessionBuilder::PushPiece(
+    shared_ptr<const OwnedPiece> piece, int team) {
+  pieces_[team].push_back(piece);
+  return *this;
+}
+
+unique_ptr<Session> SessionBuilder::Build() {
+  return make_unique<Session>(make_unique<SessionContextImpl>(seed_),
+      player_num_, board_id_, deck_id_, pieces_);
+}
+
 NS_HIME_END
 
