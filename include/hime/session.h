@@ -95,7 +95,7 @@ class Session {
 class SessionBuilder {
  public:
   SessionBuilder(int seed, int player_num, int board_id, int deck_id);
-  SessionBuilder& PushPiece(std::shared_ptr<const OwnedPiece>, int team);
+  void PushPiece(std::shared_ptr<const OwnedPiece>, int team);
   std::unique_ptr<Session> Build();
  private:
   int seed_, player_num_, board_id_, deck_id_;

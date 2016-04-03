@@ -371,10 +371,9 @@ SessionBuilder::SessionBuilder(
   pieces_(vector<vector<shared_ptr<const OwnedPiece>>>(player_num)) {
 }
 
-SessionBuilder& SessionBuilder::PushPiece(
+void SessionBuilder::PushPiece(
     shared_ptr<const OwnedPiece> piece, int team) {
   pieces_[team].push_back(piece);
-  return *this;
 }
 
 unique_ptr<Session> SessionBuilder::Build() {

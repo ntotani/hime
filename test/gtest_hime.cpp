@@ -93,9 +93,8 @@ TEST_F(SessionTest, Constructor) {
 
 TEST_F(SessionTest, Builder) {
   SessionBuilder builder(0, 2, 1, 1);
-  builder
-    .PushPiece(s_->owned_pieces()[0][0], 0)
-    .PushPiece(s_->owned_pieces()[1][0], 1);
+  builder.PushPiece(s_->owned_pieces()[0][0], 0);
+  builder.PushPiece(s_->owned_pieces()[1][0], 1);
   auto s = builder.Build();
   EXPECT_EQ(hime::Tile::Type::kNone, s->board().tiles()[0][0]->type);
   EXPECT_EQ(hime::Card::kFront, s->decks()[0][0]);
