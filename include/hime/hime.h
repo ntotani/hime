@@ -92,6 +92,8 @@ enum class Card {
 
 struct Point {
   int i, j;
+  Point():i(0), j(0) {}
+  Point(int i, int j):i(i), j(j) {}
   bool operator==(const Point& rhs) const {
     return i == rhs.i && j == rhs.j;
   }

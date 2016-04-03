@@ -1,4 +1,5 @@
 #include <boost/python.hpp>
+#include <boost/python/suite/indexing/map_indexing_suite.hpp>
 #include <string>
 #include <vector>
 #include "hime/master.h"
@@ -7,6 +8,7 @@
 
 using std::string;
 using std::vector;
+using std::unordered_map;
 using std::shared_ptr;
 using std::unique_ptr;
 using std::make_shared;
@@ -21,6 +23,8 @@ using boost::python::copy_const_reference;
 using boost::python::make_function;
 using boost::python::register_ptr_to_python;
 using boost::python::manage_new_object;
+using boost::python::map_indexing_suite;
+using hime::Point;
 using hime::Parameter;
 using hime::MasterPiece;
 using hime::OwnedPiece;
@@ -42,6 +46,15 @@ boost::python::object adapt_unique(unique_ptr<T> (C::*fn)(Args...)) {
 shared_ptr<const OwnedPiece> create_owned_piece(
     shared_ptr<const MasterPiece> master, const string& id) {
   return make_shared<const OwnedPiece>(master, id);
+}
+
+struct Formation {
+  void Add(string key, Point value) { data[key] = value; }
+  unordered_map<string, Point> data;
+};
+
+bool commit_formation_wrapper(Session* self, const Formation& form) {
+  return self->CommitFormation(form.data);
 }
 
 BOOST_PYTHON_MODULE(hime) {
@@ -67,6 +80,9 @@ BOOST_PYTHON_MODULE(hime) {
     .add_property("desc", make_function(
           &Skill::desc, return_value_policy<copy_const_reference>()))
     .add_property("rate", &Skill::rate);
+  class_<Point>("Point", init<int, int>())
+    .def_readwrite("i", &Point::i)
+    .def_readwrite("j", &Point::j);
 
   // master.h
   class_<Master, noncopyable>("Master")
@@ -106,7 +122,9 @@ BOOST_PYTHON_MODULE(hime) {
     .def("push_piece", &SessionBuilder::PushPiece)
     .def("build", adapt_unique(&SessionBuilder::Build));
   class_<Session, noncopyable>("Session", no_init)
-    .add_property("player_num", &Session::player_num);
+    .add_property("player_num", &Session::player_num)
+    .def("commit_formation", &commit_formation_wrapper);
+  class_<Formation>("Formation").def("add", &Formation::Add);
 
   // types
   register_ptr_to_python<shared_ptr<const Skill>>();
