@@ -1,5 +1,4 @@
 #include <boost/python.hpp>
-#include <boost/python/suite/indexing/map_indexing_suite.hpp>
 #include <string>
 #include <vector>
 #include "hime/master.h"
@@ -23,7 +22,6 @@ using boost::python::copy_const_reference;
 using boost::python::make_function;
 using boost::python::register_ptr_to_python;
 using boost::python::manage_new_object;
-using boost::python::map_indexing_suite;
 using hime::Point;
 using hime::Parameter;
 using hime::MasterPiece;
@@ -55,6 +53,17 @@ struct Formation {
 
 bool commit_formation_wrapper(Session* self, const Formation& form) {
   return self->CommitFormation(form.data);
+}
+
+struct Commands {
+  void Add(int piece_id, int card_idx) {
+    data.push_back({piece_id, card_idx});
+  }
+  vector<Session::Command> data;
+};
+
+string process_turn_wrapper(Session* self, const Commands& commands) {
+  return self->ActsToStr(self->ProcessTurn(commands.data));
 }
 
 BOOST_PYTHON_MODULE(hime) {
@@ -123,8 +132,11 @@ BOOST_PYTHON_MODULE(hime) {
     .def("build", adapt_unique(&SessionBuilder::Build));
   class_<Session, noncopyable>("Session", no_init)
     .add_property("player_num", &Session::player_num)
-    .def("commit_formation", &commit_formation_wrapper);
+    .def("commit_formation", &commit_formation_wrapper)
+    .def("process_turn", &process_turn_wrapper);
   class_<Formation>("Formation").def("add", &Formation::Add);
+  class_<Commands>("Commands")
+    .def("add", &Commands::Add);
 
   // types
   register_ptr_to_python<shared_ptr<const Skill>>();

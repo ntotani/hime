@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <string>
+#include <sstream>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -109,6 +110,16 @@ vector<unique_ptr<Action>> Session::ProcessTurn(
   }
   DrawCard();
   return move(acts);
+}
+
+string Session::ActsToStr(const vector<unique_ptr<Action>>& acts) const {
+  std::ostringstream s;
+  s << "[";
+  for (int i = 0; i < acts.size(); i++) {
+    s << acts[i]->ToString();
+    s << (i < acts.size() - 1 ? "," : "]");
+  }
+  return move(s.str());
 }
 
 int Session::FindPiece(Point position) const {

@@ -50,6 +50,8 @@ class Session {
       const std::unordered_map<std::string, SessionPieceState>& formation);
   std::vector<std::unique_ptr<Action>> ProcessTurn(
       const std::vector<Command>& commands);
+  std::string ActsToStr(
+      const std::vector<std::unique_ptr<Action>>& acts) const;
   int FindPiece(Point position) const;
   bool IsHime(int piece_id) const;
   bool IsDrop(int team_id) const;
