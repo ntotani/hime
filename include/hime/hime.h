@@ -2,6 +2,7 @@
 #define INCLUDE_HIME_HIME_H_
 
 #include <string>
+#include <sstream>
 #include <unordered_map>
 #include <vector>
 
@@ -99,6 +100,11 @@ struct Point {
   }
   Point operator+(const Point& rhs) const {
     return {i + rhs.i, j + rhs.j};
+  }
+  std::string ToString() const {
+    std::ostringstream s;
+    s << "{\"i\":" << i << ",\"j\":" << j << "}";
+    return s.str();
   }
 };
 

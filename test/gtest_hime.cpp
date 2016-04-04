@@ -130,11 +130,15 @@ TEST_F(SessionTest, ProcessTurn) {
   EXPECT_EQ(Action::Type::kChip, chip->type);
   EXPECT_EQ(0, chip->actor_id);
   EXPECT_EQ(0, chip->chip_idx);
+  EXPECT_EQ(
+      "{\"type\":\"chip\",\"actor_id\":0,\"chip_idx\":0}", chip->ToString());
   auto act = unique_ptr<ActionMove>(
       static_cast<ActionMove*>(acts[1].release()));
   EXPECT_EQ(Action::Type::kMove, act->type);
   ExpectPoint({4, 2}, act->from);
   ExpectPoint({2, 2}, act->to);
+  EXPECT_EQ("{\"type\":\"move\",\"actor_id\":0,"
+      "\"from\":{\"i\":4,\"j\":2},\"to\":{\"i\":2,\"j\":2}}", act->ToString());
   auto &p = s_->pieces()[0];
   ExpectPoint({2, 2}, p->position());
   s_->ProcessTurn({{0, 0}});  // FrontR
@@ -186,12 +190,15 @@ TEST_F(SessionTest, ProcessTurnOb) {
       static_cast<ActionOb*>(acts[1].release()));
   EXPECT_EQ(Action::Type::kOb, act->type);
   ExpectPoint({-2, 2}, act->pos);
+  EXPECT_EQ("{\"type\":\"ob\",\"actor_id\":0,"
+      "\"pos\":{\"i\":-2,\"j\":2}}", act->ToString());
   auto &p = s_->pieces()[0];
   EXPECT_EQ(0, p->hp());
   auto drop = unique_ptr<ActionDrop>(
       static_cast<ActionDrop*>(acts[2].release()));
   EXPECT_EQ(Action::Type::kDrop, drop->type);
   EXPECT_EQ(0, drop->team_id);
+  EXPECT_EQ("{\"type\":\"drop\",\"team_id\":0}", drop->ToString());
 }
 
 TEST_F(SessionTest, ProcessTurnAttack) {
@@ -209,6 +216,9 @@ TEST_F(SessionTest, ProcessTurnAttack) {
   EXPECT_EQ(40, act->dmg);
   auto &p = s_->pieces()[1];
   EXPECT_EQ(60, p->hp());
+  EXPECT_EQ("{\"type\":\"attack\",\"actor_id\":0,\"target_id\":1,"
+      "\"from\":{\"i\":8,\"j\":2},\"to\":{\"i\":6,\"j\":2},"
+      "\"hp\":100,\"dmg\":40}", act->ToString());
 }
 
 class SessionHimeTest : public testing::Test {
@@ -276,6 +286,9 @@ TEST_F(SessionHimeTest, HimeHeal) {
   EXPECT_EQ(1, act->hp);
   EXPECT_EQ(60, act->gain);
   EXPECT_EQ(61, s_->pieces()[1]->hp());
+  EXPECT_EQ("{\"type\":\"heal\",\"actor_id\":0,\"target_id\":1,"
+      "\"from\":{\"i\":8,\"j\":2},\"to\":{\"i\":6,\"j\":2},"
+      "\"hp\":1,\"gain\":60}", act->ToString());
 }
 
 class SessionThreeTest : public testing::Test {
