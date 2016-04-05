@@ -2,6 +2,7 @@
 #define INCLUDE_HIME_BOARD_H_
 
 #include <vector>
+#include <memory>
 
 #include "hime/hime.h"
 

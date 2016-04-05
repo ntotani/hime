@@ -7,12 +7,11 @@ NS_HIME_BEGIN
 using std::vector;
 using std::unique_ptr;
 using std::make_unique;
-using Tile::Type::kNone;
-using Tile::Type::kNormal;
-using Tile::Type::kEvolution;
-using Tile::Type::kCamp;
 
 Board::Board(int board_id) {
+  auto kNone = Tile::Type::kNone;
+  auto kNormal = Tile::Type::kNormal;
+  auto kCamp = Tile::Type::kCamp;
   vector<vector<Tile::Type>> types;
   switch (board_id) {
     default:
