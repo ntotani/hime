@@ -35,9 +35,8 @@ class Session {
  public:
   struct Command {
     const int piece_id;
-    const int card_idx;
-    Command(int piece_id, int card_idx)
-        :piece_id(piece_id), card_idx(card_idx) {}
+    const Point to;
+    Command(int piece_id, Point to) :piece_id(piece_id), to(to) {}
   };
 
   Session(std::unique_ptr<SessionContext> context, int player_num,

@@ -101,6 +101,9 @@ struct Point {
   Point operator+(const Point& rhs) const {
     return {i + rhs.i, j + rhs.j};
   }
+  Point operator-(const Point& rhs) const {
+    return {i - rhs.i, j - rhs.j};
+  }
   std::string ToString() const {
     std::ostringstream s;
     s << "{\"i\":" << i << ",\"j\":" << j << "}";

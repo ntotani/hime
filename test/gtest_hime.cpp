@@ -123,17 +123,9 @@ TEST_F(SessionTest, CommitFormation) {
 
 TEST_F(SessionTest, ProcessTurn) {
   s_->CommitFormation({{"a", {4, 2}}});
-  auto acts = s_->ProcessTurn({{0, 0}});  // Front
-  EXPECT_EQ(2, acts.size());
-  auto chip = unique_ptr<ActionChip>(
-      static_cast<ActionChip*>(acts[0].release()));
-  EXPECT_EQ(Action::Type::kChip, chip->type);
-  EXPECT_EQ(0, chip->actor_id);
-  EXPECT_EQ(0, chip->chip_idx);
-  EXPECT_EQ(
-      "{\"type\":\"chip\",\"actor_id\":0,\"chip_idx\":0}", chip->ToString());
+  auto acts = s_->ProcessTurn({{0, {2, 2}}});  // Front
   auto act = unique_ptr<ActionMove>(
-      static_cast<ActionMove*>(acts[1].release()));
+      static_cast<ActionMove*>(acts[0].release()));
   EXPECT_EQ(Action::Type::kMove, act->type);
   ExpectPoint({4, 2}, act->from);
   ExpectPoint({2, 2}, act->to);
@@ -141,23 +133,11 @@ TEST_F(SessionTest, ProcessTurn) {
       "\"from\":{\"i\":4,\"j\":2},\"to\":{\"i\":2,\"j\":2}}", act->ToString());
   auto &p = s_->pieces()[0];
   ExpectPoint({2, 2}, p->position());
-  s_->ProcessTurn({{0, 0}});  // FrontR
-  ExpectPoint({1, 3}, p->position());
-  s_->ProcessTurn({{0, 0}});  // FrontL
-  ExpectPoint({0, 2}, p->position());
-  s_->ProcessTurn({{0, 0}});  // BackR
-  ExpectPoint({1, 3}, p->position());
-  s_->ProcessTurn({{0, 0}});  // BackL
-  ExpectPoint({2, 2}, p->position());
-  s_->ProcessTurn({{0, 0}});  // Back
-  ExpectPoint({4, 2}, p->position());
 }
 
 TEST_F(SessionTest, ProcessTurnInvalid) {
   s_->CommitFormation({{"a", {4, 2}}});
-  auto acts = s_->ProcessTurn({{100, 0}});
-  EXPECT_EQ(0, acts.size());
-  acts = s_->ProcessTurn({{0, 100}});
+  auto acts = s_->ProcessTurn({{100, {2, 2}}});
   EXPECT_EQ(0, acts.size());
 }
 
@@ -184,10 +164,10 @@ TEST_F(SessionTest, RotateDir) {
 
 TEST_F(SessionTest, ProcessTurnOb) {
   s_->CommitFormation({{"a", {0, 2}}});
-  auto acts = s_->ProcessTurn({{0, 0}});  // Front
-  EXPECT_EQ(3, acts.size());
+  auto acts = s_->ProcessTurn({{0, {-2, 2}}});
+  EXPECT_EQ(2, acts.size());
   auto act = unique_ptr<ActionOb>(
-      static_cast<ActionOb*>(acts[1].release()));
+      static_cast<ActionOb*>(acts[0].release()));
   EXPECT_EQ(Action::Type::kOb, act->type);
   ExpectPoint({-2, 2}, act->pos);
   EXPECT_EQ("{\"type\":\"ob\",\"actor_id\":0,"
@@ -195,7 +175,7 @@ TEST_F(SessionTest, ProcessTurnOb) {
   auto &p = s_->pieces()[0];
   EXPECT_EQ(0, p->hp());
   auto drop = unique_ptr<ActionDrop>(
-      static_cast<ActionDrop*>(acts[2].release()));
+      static_cast<ActionDrop*>(acts[1].release()));
   EXPECT_EQ(Action::Type::kDrop, drop->type);
   EXPECT_EQ(0, drop->team_id);
   EXPECT_EQ("{\"type\":\"drop\",\"team_id\":0}", drop->ToString());
@@ -203,10 +183,10 @@ TEST_F(SessionTest, ProcessTurnOb) {
 
 TEST_F(SessionTest, ProcessTurnAttack) {
   s_->CommitFormation({{"a", {8, 2}}, {"b", {6, 2}}});
-  auto acts = s_->ProcessTurn({{0, 0}});  // Front
-  EXPECT_EQ(2, acts.size());
+  auto acts = s_->ProcessTurn({{0, {6, 2}}});
+  EXPECT_EQ(1, acts.size());
   auto act = unique_ptr<ActionAttack>(
-      static_cast<ActionAttack*>(acts[1].release()));
+      static_cast<ActionAttack*>(acts[0].release()));
   EXPECT_EQ(Action::Type::kAttack, act->type);
   EXPECT_EQ(0, act->actor_id);
   EXPECT_EQ(1, act->target_id);
@@ -241,20 +221,20 @@ class SessionHimeTest : public testing::Test {
 
 TEST_F(SessionHimeTest, Drop) {
   s_->CommitFormation({{"a", {0, 2}}});
-  auto acts = s_->ProcessTurn({{0, 0}});  // Front
-  EXPECT_EQ(3, acts.size());
+  auto acts = s_->ProcessTurn({{0, {-2, 2}}});
+  EXPECT_EQ(2, acts.size());
   auto act = unique_ptr<ActionDrop>(
-      static_cast<ActionDrop*>(acts[2].release()));
+      static_cast<ActionDrop*>(acts[1].release()));
   EXPECT_EQ(Action::Type::kDrop, act->type);
   EXPECT_EQ(0, act->team_id);
 }
 
 TEST_F(SessionHimeTest, Camp) {
   s_->CommitFormation({{"a", {2, 2}}});
-  auto acts = s_->ProcessTurn({{0, 0}});  // Front
-  EXPECT_EQ(3, acts.size());
+  auto acts = s_->ProcessTurn({{0, {0, 2}}});
+  EXPECT_EQ(2, acts.size());
   auto act = unique_ptr<ActionDrop>(
-      static_cast<ActionDrop*>(acts[2].release()));
+      static_cast<ActionDrop*>(acts[1].release()));
   EXPECT_EQ(Action::Type::kDrop, act->type);
   EXPECT_EQ(1, act->team_id);
 }
@@ -263,10 +243,10 @@ TEST_F(SessionHimeTest, HimeDead) {
   s_->CommitFormation({
       {"a", {{8, 2},   1, Parameter(100)}},
       {"b", {{6, 2}, 100, Parameter(100)}}});
-  auto acts = s_->ProcessTurn({{1, 0}});  // Front
-  EXPECT_EQ(3, acts.size());
+  auto acts = s_->ProcessTurn({{1, {8, 2}}});
+  EXPECT_EQ(2, acts.size());
   auto act = unique_ptr<ActionDrop>(
-      static_cast<ActionDrop*>(acts[2].release()));
+      static_cast<ActionDrop*>(acts[1].release()));
   EXPECT_EQ(Action::Type::kDrop, act->type);
   EXPECT_EQ(0, act->team_id);
 }
@@ -275,9 +255,9 @@ TEST_F(SessionHimeTest, HimeHeal) {
   s_->CommitFormation({
       {"a", {{8, 2}, 100, Parameter(100)}},
       {"b", {{6, 2},   1, Parameter(100)}}});
-  auto acts = s_->ProcessTurn({{0, 0}});  // Front
+  auto acts = s_->ProcessTurn({{0, {6, 2}}});
   auto act = unique_ptr<ActionHeal>(
-      static_cast<ActionHeal*>(acts[1].release()));
+      static_cast<ActionHeal*>(acts[0].release()));
   EXPECT_EQ(Action::Type::kHeal, act->type);
   EXPECT_EQ(0, act->actor_id);
   EXPECT_EQ(1, act->target_id);

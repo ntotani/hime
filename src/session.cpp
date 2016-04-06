@@ -91,24 +91,10 @@ vector<unique_ptr<Action>> Session::ProcessTurn(
   for (auto cmd : commands) {
     if (pieces_.size() <= static_cast<size_t>(cmd.piece_id)) continue;
     auto& actor = pieces_[cmd.piece_id];
-    auto& hands = hands_[actor->team()];
-    if (hands.size() <= static_cast<size_t>(cmd.card_idx)) continue;
-    auto card = hands[cmd.card_idx];
-    acts.push_back(make_unique<ActionChip>(cmd.piece_id, cmd.card_idx));
-    hands.erase(hands.begin() + cmd.card_idx);
-    trash_[actor->team()].push_back(card);
-    if (card == Card::kSkill) {
-      // TODO(ntotani): parse skill
-    } else {
-      // TODO(ntotani): pSkill move twice
-      for (auto dir : Card2Dirs(card)) {
-        auto e = ApplyDir(cmd.piece_id, dir);
-        acts.insert(acts.end(),
-            make_move_iterator(e.begin()), make_move_iterator(e.end()));
-      }
-    }
+    auto e = ApplyDir(cmd.piece_id, cmd.to - actor->position());
+    acts.insert(acts.end(),
+        make_move_iterator(e.begin()), make_move_iterator(e.end()));
   }
-  DrawCard();
   return move(acts);
 }
 
@@ -194,7 +180,6 @@ void Session::DrawCard() {
 vector<unique_ptr<Action>> Session::ApplyDir(int piece_id, Point dir) {
   vector<unique_ptr<Action>> acts;
   auto& actor = pieces_[piece_id];
-  dir = RotateDir(dir, actor->team());
   auto dst = actor->position() + dir;
   int hit = FindPiece(dst);
   // TODO(ntotani): sniper skill
