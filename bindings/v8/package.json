@@ -1,0 +1,10 @@
+{
+  "name": "hime",
+  "version": "0.0.0",
+  "description": "",
+  "devDependencies":{
+      "nan":"*",
+      "bindings":"*"
+  }
+}
+
