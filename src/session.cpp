@@ -117,8 +117,9 @@ string Session::ActsToStr(const vector<unique_ptr<Action>>& acts) const {
   s << "[";
   for (int i = 0; i < acts.size(); i++) {
     s << acts[i]->ToString();
-    s << (i < acts.size() - 1 ? "," : "]");
+    if (i < acts.size() - 1) s << ",";
   }
+  s << "]";
   return move(s.str());
 }
 
