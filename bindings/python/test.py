@@ -24,6 +24,6 @@ form.add("b", Point(0, 3))
 print session.commit_formation(form)
 
 cmds = Commands()
-cmds.add(0, 0)
+cmds.add(0, Point(6, 3))
 print session.process_turn(cmds)
 

@@ -56,8 +56,8 @@ bool commit_formation_wrapper(Session* self, const Formation& form) {
 }
 
 struct Commands {
-  void Add(int piece_id, int card_idx) {
-    data.push_back({piece_id, card_idx});
+  void Add(int piece_id, Point to) {
+    data.push_back({piece_id, to});
   }
   vector<Session::Command> data;
 };
