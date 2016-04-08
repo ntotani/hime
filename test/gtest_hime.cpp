@@ -201,6 +201,17 @@ TEST_F(SessionTest, ProcessTurnAttack) {
       "\"hp\":100,\"dmg\":40}", act->ToString());
 }
 
+TEST_F(SessionTest, ApplyActions) {
+  s_->CommitFormation({{"a", {8, 2}}});
+  Point from = {8, 2};
+  Point to = {6, 2};
+  vector<unique_ptr<Action>> acts;
+  acts.push_back(make_unique<ActionMove>(0, from, to));
+  s_->ApplyActions(acts);
+  auto &p = s_->pieces()[0];
+  ExpectPoint({6, 2}, p->position());
+}
+
 class SessionHimeTest : public testing::Test {
  protected:
   virtual void SetUp() {

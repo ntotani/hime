@@ -98,6 +98,15 @@ vector<unique_ptr<Action>> Session::ProcessTurn(
   return move(acts);
 }
 
+void Session::ApplyActions(const vector<unique_ptr<Action>>& acts) {
+  for (auto &act : acts) {
+    if (act->type == Action::Type::kMove) {
+      auto move = static_cast<ActionMove*>(act.get());
+      pieces_[move->actor_id]->position_ = move->to;
+    }
+  }
+}
+
 string Session::ActsToStr(const vector<unique_ptr<Action>>& acts) const {
   std::ostringstream s;
   s << "[";

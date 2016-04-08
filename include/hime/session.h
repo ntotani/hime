@@ -52,6 +52,7 @@ class Session {
       const std::vector<Command>& commands);
   std::string ActsToStr(
       const std::vector<std::unique_ptr<Action>>& acts) const;
+  void ApplyActions(const std::vector<std::unique_ptr<Action>>& acts);
   int FindPiece(Point position) const;
   bool IsHime(int piece_id) const;
   bool IsDrop(int team_id) const;
