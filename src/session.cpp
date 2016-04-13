@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <string>
-#include <sstream>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -108,14 +107,11 @@ void Session::ApplyActions(const vector<unique_ptr<Action>>& acts) {
 }
 
 string Session::ActsToStr(const vector<unique_ptr<Action>>& acts) const {
-  std::ostringstream s;
-  s << "[";
-  for (int i = 0; static_cast<size_t>(i) < acts.size(); i++) {
-    s << acts[i]->ToString();
-    if (static_cast<size_t>(i) < acts.size() - 1) s << ",";
+  picojson::array arr;
+  for (auto &e : acts) {
+    arr.push_back(e->ToPicoValue());
   }
-  s << "]";
-  return move(s.str());
+  return move(picojson::value(arr).serialize());
 }
 
 int Session::FindPiece(Point position) const {

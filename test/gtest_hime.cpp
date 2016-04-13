@@ -129,8 +129,9 @@ TEST_F(SessionTest, ProcessTurn) {
   EXPECT_EQ(Action::Type::kMove, act->type);
   ExpectPoint({4, 2}, act->from);
   ExpectPoint({2, 2}, act->to);
-  EXPECT_EQ("{\"type\":\"move\",\"actor_id\":0,"
-      "\"from\":{\"i\":4,\"j\":2},\"to\":{\"i\":2,\"j\":2}}", act->ToString());
+  EXPECT_EQ("{\"actor_id\":0,\"from\":{\"i\":4,\"j\":2},"
+      "\"to\":{\"i\":2,\"j\":2},\"type\":\"move\"}",
+      act->ToPicoValue().serialize());
   auto &p = s_->pieces()[0];
   ExpectPoint({2, 2}, p->position());
 }
@@ -170,15 +171,16 @@ TEST_F(SessionTest, ProcessTurnOb) {
       static_cast<ActionOb*>(acts[0].release()));
   EXPECT_EQ(Action::Type::kOb, act->type);
   ExpectPoint({-2, 2}, act->pos);
-  EXPECT_EQ("{\"type\":\"ob\",\"actor_id\":0,"
-      "\"pos\":{\"i\":-2,\"j\":2}}", act->ToString());
+  EXPECT_EQ("{\"actor_id\":0,\"pos\":{\"i\":-2,\"j\":2},\"type\":\"ob\"}",
+      act->ToPicoValue().serialize());
   auto &p = s_->pieces()[0];
   EXPECT_EQ(0, p->hp());
   auto drop = unique_ptr<ActionDrop>(
       static_cast<ActionDrop*>(acts[1].release()));
   EXPECT_EQ(Action::Type::kDrop, drop->type);
   EXPECT_EQ(0, drop->team_id);
-  EXPECT_EQ("{\"type\":\"drop\",\"team_id\":0}", drop->ToString());
+  EXPECT_EQ("{\"team_id\":0,\"type\":\"drop\"}",
+      drop->ToPicoValue().serialize());
 }
 
 TEST_F(SessionTest, ProcessTurnAttack) {
@@ -196,9 +198,9 @@ TEST_F(SessionTest, ProcessTurnAttack) {
   EXPECT_EQ(40, act->dmg);
   auto &p = s_->pieces()[1];
   EXPECT_EQ(60, p->hp());
-  EXPECT_EQ("{\"type\":\"attack\",\"actor_id\":0,\"target_id\":1,"
-      "\"from\":{\"i\":8,\"j\":2},\"to\":{\"i\":6,\"j\":2},"
-      "\"hp\":100,\"dmg\":40}", act->ToString());
+  EXPECT_EQ("{\"actor_id\":0,\"dmg\":40,\"from\":{\"i\":8,\"j\":2},\"hp\":100,"
+      "\"target_id\":1,\"to\":{\"i\":6,\"j\":2},\"type\":\"attack\"}",
+      act->ToPicoValue().serialize());
 }
 
 TEST_F(SessionTest, ApplyActions) {
@@ -277,9 +279,9 @@ TEST_F(SessionHimeTest, HimeHeal) {
   EXPECT_EQ(1, act->hp);
   EXPECT_EQ(60, act->gain);
   EXPECT_EQ(61, s_->pieces()[1]->hp());
-  EXPECT_EQ("{\"type\":\"heal\",\"actor_id\":0,\"target_id\":1,"
-      "\"from\":{\"i\":8,\"j\":2},\"to\":{\"i\":6,\"j\":2},"
-      "\"hp\":1,\"gain\":60}", act->ToString());
+  EXPECT_EQ("{\"actor_id\":0,\"from\":{\"i\":8,\"j\":2},\"gain\":60,\"hp\":1,"
+      "\"target_id\":1,\"to\":{\"i\":6,\"j\":2},\"type\":\"heal\"}",
+      act->ToPicoValue().serialize());
 }
 
 class SessionThreeTest : public testing::Test {

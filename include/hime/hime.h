@@ -2,9 +2,9 @@
 #define INCLUDE_HIME_HIME_H_
 
 #include <string>
-#include <sstream>
 #include <unordered_map>
 #include <vector>
+#include "picojson/picojson.h"
 
 #define NS_HIME_BEGIN namespace hime {
 #define NS_HIME_END   }
@@ -104,10 +104,11 @@ struct Point {
   Point operator-(const Point& rhs) const {
     return {i - rhs.i, j - rhs.j};
   }
-  std::string ToString() const {
-    std::ostringstream s;
-    s << "{\"i\":" << i << ",\"j\":" << j << "}";
-    return s.str();
+  picojson::value ToPicoValue() const {
+    picojson::object obj;
+    obj["i"] = picojson::value(static_cast<double>(i));
+    obj["j"] = picojson::value(static_cast<double>(j));
+    return std::move(picojson::value(obj));
   }
 };
 
