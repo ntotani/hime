@@ -308,5 +308,17 @@ TEST_F(SessionThreeTest, RotateDir) {
   ExpectPoint({2, 0}, s_->RotateDir({-1, 1}, 1));
 }
 
+class SessionStringifyTest : public testing::Test {};
+
+TEST_F(SessionStringifyTest, ActionChip) {
+  auto json = "[{\"actor_id\":1,\"chip_idx\":1,\"type\":\"chip\"}]";
+  auto acts = Session::StrToActs(json);
+  EXPECT_EQ(1, acts.size());
+  auto act = static_cast<ActionChip*>(acts[0].get());
+  EXPECT_EQ(1, act->actor_id);
+  EXPECT_EQ(1, act->chip_idx);
+  EXPECT_EQ(json, Session::ActsToStr(acts));
+}
+
 }  // namespace
 

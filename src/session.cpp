@@ -106,12 +106,24 @@ void Session::ApplyActions(const vector<unique_ptr<Action>>& acts) {
   }
 }
 
-string Session::ActsToStr(const vector<unique_ptr<Action>>& acts) const {
+string Session::ActsToStr(const vector<unique_ptr<Action>>& acts) {
   picojson::array arr;
   for (auto &e : acts) {
     arr.push_back(e->ToPicoValue());
   }
   return move(picojson::value(arr).serialize());
+}
+
+vector<unique_ptr<Action>> Session::StrToActs(const string& str) {
+  vector<unique_ptr<Action>> acts;
+  picojson::value root;
+  auto error = picojson::parse(root, str);
+  if (error.empty() && root.is<picojson::array>()) {
+    for (auto &e : root.get<picojson::array>()) {
+      acts.push_back(move(Action::FromPicoValue(e)));
+    }
+  }
+  return move(acts);
 }
 
 int Session::FindPiece(Point position) const {

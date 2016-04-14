@@ -1,10 +1,14 @@
 #include "hime/action.h"
 
+#include <string>
 #include <vector>
 
 NS_HIME_BEGIN
 
+using std::string;
 using std::move;
+using std::unique_ptr;
+using std::make_unique;
 using picojson::value;
 using picojson::object;
 
@@ -59,9 +63,19 @@ value ActionHeal::ToPicoValue() const {
 
 value ActionDrop::ToPicoValue() const {
   object obj;
-  obj["type"]      = value("drop");
-  obj["team_id"]  = value(static_cast<double>(team_id));
+  obj["type"]    = value("drop");
+  obj["team_id"] = value(static_cast<double>(team_id));
   return move(value(obj));
+}
+
+unique_ptr<Action> Action::FromPicoValue(const value& val) {
+  auto obj = val.get<object>();
+  auto type = obj["type"].get<string>();
+  if (type == "chip") {
+    int actor_id = static_cast<int>(obj["actor_id"].get<double>());
+    int chip_idx = static_cast<int>(obj["chip_idx"].get<double>());
+    return make_unique<ActionChip>(actor_id, chip_idx);
+  }
 }
 
 NS_HIME_END

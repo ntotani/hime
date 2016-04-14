@@ -1,6 +1,7 @@
 #ifndef INCLUDE_HIME_ACTION_H_
 #define INCLUDE_HIME_ACTION_H_
 
+#include <memory>
 #include "hime/hime.h"
 
 NS_HIME_BEGIN
@@ -21,6 +22,7 @@ struct Action {
   const Type type;
   explicit Action(Type type):type(type) {}
   virtual picojson::value ToPicoValue() const = 0;
+  static std::unique_ptr<Action> FromPicoValue(const picojson::value& val);
 };
 
 /*
