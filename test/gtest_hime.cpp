@@ -61,7 +61,15 @@ class SessionContextStub : public SessionContext {
   int random() { return 0; }
 };
 
-class SessionTest : public testing::Test {
+class HimeTest : public testing::Test {
+ protected:
+  void ExpectPoint(const Point& a, const Point& b) {
+    EXPECT_EQ(a.i, b.i);
+    EXPECT_EQ(a.j, b.j);
+  }
+};
+
+class SessionTest : public HimeTest {
  protected:
   virtual void SetUp() {
     auto op1 = make_shared<const OwnedPiece>(env->master.piece("0"), "a");
@@ -71,10 +79,6 @@ class SessionTest : public testing::Test {
   }
   virtual void TearDown() {
     delete s_;
-  }
-  void ExpectPoint(const Point& a, const Point& b) {
-    EXPECT_EQ(a.i, b.i);
-    EXPECT_EQ(a.j, b.j);
   }
   Session* s_;
 };
@@ -214,7 +218,7 @@ TEST_F(SessionTest, ApplyActions) {
   ExpectPoint({6, 2}, p->position());
 }
 
-class SessionHimeTest : public testing::Test {
+class SessionHimeTest : public HimeTest {
  protected:
   virtual void SetUp() {
     auto op1 = make_shared<const OwnedPiece>(env->master.piece("1"), "a");
@@ -224,10 +228,6 @@ class SessionHimeTest : public testing::Test {
   }
   virtual void TearDown() {
     delete s_;
-  }
-  void ExpectPoint(const Point& a, const Point& b) {
-    EXPECT_EQ(a.i, b.i);
-    EXPECT_EQ(a.j, b.j);
   }
   Session* s_;
 };
@@ -308,13 +308,7 @@ TEST_F(SessionThreeTest, RotateDir) {
   ExpectPoint({2, 0}, s_->RotateDir({-1, 1}, 1));
 }
 
-class SessionStringifyTest : public testing::Test {
- protected:
-  void ExpectPoint(const Point& a, const Point& b) {
-    EXPECT_EQ(a.i, b.i);
-    EXPECT_EQ(a.j, b.j);
-  }
-};
+class SessionStringifyTest : public HimeTest {};
 
 TEST_F(SessionStringifyTest, ActionChipMove) {
   auto json = "[{\"actor_id\":1,\"chip_idx\":1,\"type\":\"chip\"},"
