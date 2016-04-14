@@ -308,15 +308,72 @@ TEST_F(SessionThreeTest, RotateDir) {
   ExpectPoint({2, 0}, s_->RotateDir({-1, 1}, 1));
 }
 
-class SessionStringifyTest : public testing::Test {};
+class SessionStringifyTest : public testing::Test {
+ protected:
+  void ExpectPoint(const Point& a, const Point& b) {
+    EXPECT_EQ(a.i, b.i);
+    EXPECT_EQ(a.j, b.j);
+  }
+};
 
-TEST_F(SessionStringifyTest, ActionChip) {
-  auto json = "[{\"actor_id\":1,\"chip_idx\":1,\"type\":\"chip\"}]";
+TEST_F(SessionStringifyTest, ActionChipMove) {
+  auto json = "[{\"actor_id\":1,\"chip_idx\":1,\"type\":\"chip\"},"
+    "{\"actor_id\":2,\"from\":{\"i\":4,\"j\":2},"
+    "\"to\":{\"i\":2,\"j\":2},\"type\":\"move\"}]";
   auto acts = Session::StrToActs(json);
-  EXPECT_EQ(1, acts.size());
-  auto act = static_cast<ActionChip*>(acts[0].get());
-  EXPECT_EQ(1, act->actor_id);
-  EXPECT_EQ(1, act->chip_idx);
+  EXPECT_EQ(2, acts.size());
+  auto chip = static_cast<ActionChip*>(acts[0].get());
+  EXPECT_EQ(1, chip->actor_id);
+  EXPECT_EQ(1, chip->chip_idx);
+  auto move = static_cast<ActionMove*>(acts[1].get());
+  EXPECT_EQ(2, move->actor_id);
+  ExpectPoint({4, 2}, move->from);
+  ExpectPoint({2, 2}, move->to);
+  EXPECT_EQ(json, Session::ActsToStr(acts));
+}
+
+TEST_F(SessionStringifyTest, ActionOb) {
+  auto json = "[{\"actor_id\":1,\"pos\":{\"i\":-2,\"j\":2},\"type\":\"ob\"}]";
+  auto acts = Session::StrToActs(json);
+  auto ob = static_cast<ActionOb*>(acts[0].get());
+  EXPECT_EQ(1, ob->actor_id);
+  ExpectPoint({-2, 2}, ob->pos);
+  EXPECT_EQ(json, Session::ActsToStr(acts));
+}
+
+TEST_F(SessionStringifyTest, ActionAttack) {
+  auto json = "[{\"actor_id\":1,\"dmg\":1,\"from\":{\"i\":8,\"j\":2},\"hp\":1,"
+      "\"target_id\":2,\"to\":{\"i\":6,\"j\":2},\"type\":\"attack\"}]";
+  auto acts = Session::StrToActs(json);
+  auto attack = static_cast<ActionAttack*>(acts[0].get());
+  EXPECT_EQ(1, attack->actor_id);
+  EXPECT_EQ(1, attack->dmg);
+  ExpectPoint({8, 2}, attack->from);
+  EXPECT_EQ(1, attack->hp);
+  EXPECT_EQ(2, attack->target_id);
+  ExpectPoint({6, 2}, attack->to);
+  EXPECT_EQ(json, Session::ActsToStr(acts));
+}
+
+TEST_F(SessionStringifyTest, ActionHeal) {
+  auto json = "[{\"actor_id\":1,\"from\":{\"i\":8,\"j\":2},\"gain\":1,\"hp\":1,"
+      "\"target_id\":2,\"to\":{\"i\":6,\"j\":2},\"type\":\"heal\"}]";
+  auto acts = Session::StrToActs(json);
+  auto heal = static_cast<ActionHeal*>(acts[0].get());
+  EXPECT_EQ(1, heal->actor_id);
+  EXPECT_EQ(1, heal->gain);
+  ExpectPoint({8, 2}, heal->from);
+  EXPECT_EQ(1, heal->hp);
+  EXPECT_EQ(2, heal->target_id);
+  ExpectPoint({6, 2}, heal->to);
+  EXPECT_EQ(json, Session::ActsToStr(acts));
+}
+
+TEST_F(SessionStringifyTest, ActionDrop) {
+  auto json = "[{\"team_id\":1,\"type\":\"drop\"}]";
+  auto acts = Session::StrToActs(json);
+  auto drop = static_cast<ActionDrop*>(acts[0].get());
+  EXPECT_EQ(1, drop->team_id);
   EXPECT_EQ(json, Session::ActsToStr(acts));
 }
 

@@ -110,6 +110,12 @@ struct Point {
     obj["j"] = picojson::value(static_cast<double>(j));
     return std::move(picojson::value(obj));
   }
+  static Point FromPicoValue(const picojson::value& val) {
+    auto obj = val.get<picojson::object>();
+    int i = static_cast<int>(obj["i"].get<double>());
+    int j = static_cast<int>(obj["j"].get<double>());
+    return Point(i, j);
+  }
 };
 
 NS_HIME_END

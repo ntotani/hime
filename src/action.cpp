@@ -75,6 +75,34 @@ unique_ptr<Action> Action::FromPicoValue(const value& val) {
     int actor_id = static_cast<int>(obj["actor_id"].get<double>());
     int chip_idx = static_cast<int>(obj["chip_idx"].get<double>());
     return make_unique<ActionChip>(actor_id, chip_idx);
+  } else if (type == "move") {
+    int actor_id = static_cast<int>(obj["actor_id"].get<double>());
+    auto from = Point::FromPicoValue(obj["from"]);
+    auto to = Point::FromPicoValue(obj["to"]);
+    return make_unique<ActionMove>(actor_id, from, to);
+  } else if (type == "ob") {
+    int actor_id = static_cast<int>(obj["actor_id"].get<double>());
+    auto pos = Point::FromPicoValue(obj["pos"]);
+    return make_unique<ActionOb>(actor_id, pos);
+  } else if (type == "attack") {
+    int actor_id = static_cast<int>(obj["actor_id"].get<double>());
+    int target_id = static_cast<int>(obj["target_id"].get<double>());
+    auto from = Point::FromPicoValue(obj["from"]);
+    auto to = Point::FromPicoValue(obj["to"]);
+    int hp = static_cast<int>(obj["hp"].get<double>());
+    int dmg = static_cast<int>(obj["dmg"].get<double>());
+    return make_unique<ActionAttack>(actor_id, target_id, from, to, hp, dmg);
+  } else if (type == "heal") {
+    int actor_id = static_cast<int>(obj["actor_id"].get<double>());
+    int target_id = static_cast<int>(obj["target_id"].get<double>());
+    auto from = Point::FromPicoValue(obj["from"]);
+    auto to = Point::FromPicoValue(obj["to"]);
+    int hp = static_cast<int>(obj["hp"].get<double>());
+    int gain = static_cast<int>(obj["gain"].get<double>());
+    return make_unique<ActionHeal>(actor_id, target_id, from, to, hp, gain);
+  } else if (type == "drop") {
+    int team_id = static_cast<int>(obj["team_id"].get<double>());
+    return make_unique<ActionDrop>(team_id);
   }
 }
 
