@@ -42,9 +42,9 @@ struct ActionChip : public Action {
 
 struct ActionMove : public Action {
   const int actor_id;
-  const Point from, to;
-  ActionMove(int actor_id, Point from, Point to)
-      :Action(Type::kMove), actor_id(actor_id), from(from), to(to) {}
+  const Point to;
+  ActionMove(int actor_id, Point to)
+      :Action(Type::kMove), actor_id(actor_id), to(to) {}
   picojson::value ToPicoValue() const override;
 };
 
@@ -59,24 +59,20 @@ struct ActionOb : public Action {
 struct ActionAttack : public Action {
   const int actor_id;
   const int target_id;
-  const Point from, to;
-  const int hp, dmg;
-  ActionAttack(int actor_id, int target_id,
-      Point from, Point to, int hp, int dmg)
-      :Action(Type::kAttack), actor_id(actor_id), target_id(target_id),
-      from(from), to(to), hp(hp), dmg(dmg) {}
+  const int dmg;
+  ActionAttack(int actor_id, int target_id, int dmg)
+      :Action(Type::kAttack), actor_id(actor_id),
+      target_id(target_id), dmg(dmg) {}
   picojson::value ToPicoValue() const override;
 };
 
 struct ActionHeal : public Action {
   const int actor_id;
   const int target_id;
-  const Point from, to;
-  const int hp, gain;
-  ActionHeal(int actor_id, int target_id,
-      Point from, Point to, int hp, int gain)
-      :Action(Type::kHeal), actor_id(actor_id), target_id(target_id),
-      from(from), to(to), hp(hp), gain(gain) {}
+  const int gain;
+  ActionHeal(int actor_id, int target_id, int gain)
+      :Action(Type::kHeal), actor_id(actor_id),
+      target_id(target_id), gain(gain) {}
   picojson::value ToPicoValue() const override;
 };
 

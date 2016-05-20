@@ -260,8 +260,7 @@ vector<unique_ptr<Action>> Session::TryMove(int piece_id, Point position) {
       return true
   end
   */
-  acts.push_back(make_unique<ActionMove>(
-      piece_id, pieces_[piece_id]->position(), position));
+  acts.push_back(make_unique<ActionMove>(piece_id, position));
   auto ret = CommitMove(piece_id, position);
   acts.insert(acts.end(),
       make_move_iterator(ret.begin()), make_move_iterator(ret.end()));
@@ -348,9 +347,7 @@ vector<unique_ptr<Action>> Session::Attack(
       dmg = 99
   end
   */
-  acts.push_back(make_unique<ActionAttack>(actor_id, target_id,
-        pieces_[actor_id]->position(), pieces_[target_id]->position(),
-        pieces_[target_id]->hp(), damage));
+  acts.push_back(make_unique<ActionAttack>(actor_id, target_id, damage));
   pieces_[target_id]->hp_ = std::max(pieces_[target_id]->hp() - damage, 0);
   if (pieces_[target_id]->hp() <= 0) {
     if (IsDrop(pieces_[target_id]->team())) {
@@ -390,9 +387,7 @@ vector<unique_ptr<Action>> Session::Heal(int actor_id, int target_id) {
 vector<unique_ptr<Action>> Session::Heal(
     int actor_id, int target_id, int gain) {
   vector<unique_ptr<Action>> acts;
-  acts.push_back(make_unique<ActionHeal>(actor_id, target_id,
-        pieces_[actor_id]->position(), pieces_[target_id]->position(),
-        pieces_[target_id]->hp(), gain));
+  acts.push_back(make_unique<ActionHeal>(actor_id, target_id, gain));
   pieces_[target_id]->hp_ = std::min(pieces_[target_id]->hp() + gain, 100);
   return move(acts);
 }

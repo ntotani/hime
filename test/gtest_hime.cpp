@@ -150,10 +150,8 @@ TEST_F(SessionTest, ProcessTurn) {
   auto act = unique_ptr<ActionMove>(
       static_cast<ActionMove*>(acts[0].release()));
   EXPECT_EQ(Action::Type::kMove, act->type);
-  ExpectPoint({4, 2}, act->from);
   ExpectPoint({2, 2}, act->to);
-  EXPECT_EQ("{\"actor_id\":0,\"from\":{\"i\":4,\"j\":2},"
-      "\"to\":{\"i\":2,\"j\":2},\"type\":\"move\"}",
+  EXPECT_EQ("{\"actor_id\":0,\"to\":{\"i\":2,\"j\":2},\"type\":\"move\"}",
       act->ToPicoValue().serialize());
   auto &p = s_->pieces()[0];
   ExpectPoint({2, 2}, p->position());
@@ -217,23 +215,16 @@ TEST_F(SessionTest, ProcessTurnAttack) {
   EXPECT_EQ(Action::Type::kAttack, act->type);
   EXPECT_EQ(0, act->actor_id);
   EXPECT_EQ(1, act->target_id);
-  ExpectPoint({8, 2}, act->from);
-  ExpectPoint({6, 2}, act->to);
-  EXPECT_EQ(100, act->hp);
   EXPECT_EQ(40, act->dmg);
-  auto &p = s_->pieces()[1];
-  EXPECT_EQ(60, p->hp());
-  EXPECT_EQ("{\"actor_id\":0,\"dmg\":40,\"from\":{\"i\":8,\"j\":2},\"hp\":100,"
-      "\"target_id\":1,\"to\":{\"i\":6,\"j\":2},\"type\":\"attack\"}",
+  EXPECT_EQ("{\"actor_id\":0,\"dmg\":40,\"target_id\":1,\"type\":\"attack\"}",
       act->ToPicoValue().serialize());
 }
 
 TEST_F(SessionTest, ApplyActions) {
   s_->CommitFormation({{"a", {8, 2}}});
-  Point from = {8, 2};
   Point to = {6, 2};
   vector<unique_ptr<Action>> acts;
-  acts.push_back(make_unique<ActionMove>(0, from, to));
+  acts.push_back(make_unique<ActionMove>(0, to));
   s_->ApplyActions(acts);
   auto &p = s_->pieces()[0];
   ExpectPoint({6, 2}, p->position());
@@ -285,13 +276,9 @@ TEST_F(SessionHimeTest, HimeHeal) {
   EXPECT_EQ(Action::Type::kHeal, act->type);
   EXPECT_EQ(0, act->actor_id);
   EXPECT_EQ(1, act->target_id);
-  ExpectPoint({8, 2}, act->from);
-  ExpectPoint({6, 2}, act->to);
-  EXPECT_EQ(1, act->hp);
   EXPECT_EQ(60, act->gain);
   EXPECT_EQ(61, s_->pieces()[1]->hp());
-  EXPECT_EQ("{\"actor_id\":0,\"from\":{\"i\":8,\"j\":2},\"gain\":60,\"hp\":1,"
-      "\"target_id\":1,\"to\":{\"i\":6,\"j\":2},\"type\":\"heal\"}",
+  EXPECT_EQ("{\"actor_id\":0,\"gain\":60,\"target_id\":1,\"type\":\"heal\"}",
       act->ToPicoValue().serialize());
 }
 
@@ -323,8 +310,7 @@ class SessionStringifyTest : public HimeTest {};
 
 TEST_F(SessionStringifyTest, ActionChipMove) {
   auto json = "[{\"actor_id\":1,\"chip_idx\":1,\"type\":\"chip\"},"
-    "{\"actor_id\":2,\"from\":{\"i\":4,\"j\":2},"
-    "\"to\":{\"i\":2,\"j\":2},\"type\":\"move\"}]";
+    "{\"actor_id\":2,\"to\":{\"i\":2,\"j\":2},\"type\":\"move\"}]";
   auto acts = Session::StrToActs(json);
   EXPECT_EQ(2, acts.size());
   auto chip = static_cast<ActionChip*>(acts[0].get());
@@ -332,7 +318,6 @@ TEST_F(SessionStringifyTest, ActionChipMove) {
   EXPECT_EQ(1, chip->chip_idx);
   auto move = static_cast<ActionMove*>(acts[1].get());
   EXPECT_EQ(2, move->actor_id);
-  ExpectPoint({4, 2}, move->from);
   ExpectPoint({2, 2}, move->to);
   EXPECT_EQ(json, Session::ActsToStr(acts));
 }
@@ -347,30 +332,23 @@ TEST_F(SessionStringifyTest, ActionOb) {
 }
 
 TEST_F(SessionStringifyTest, ActionAttack) {
-  auto json = "[{\"actor_id\":1,\"dmg\":1,\"from\":{\"i\":8,\"j\":2},\"hp\":1,"
-      "\"target_id\":2,\"to\":{\"i\":6,\"j\":2},\"type\":\"attack\"}]";
+  auto json = "[{\"actor_id\":1,\"dmg\":1,"
+      "\"target_id\":2,\"type\":\"attack\"}]";
   auto acts = Session::StrToActs(json);
   auto attack = static_cast<ActionAttack*>(acts[0].get());
   EXPECT_EQ(1, attack->actor_id);
   EXPECT_EQ(1, attack->dmg);
-  ExpectPoint({8, 2}, attack->from);
-  EXPECT_EQ(1, attack->hp);
   EXPECT_EQ(2, attack->target_id);
-  ExpectPoint({6, 2}, attack->to);
   EXPECT_EQ(json, Session::ActsToStr(acts));
 }
 
 TEST_F(SessionStringifyTest, ActionHeal) {
-  auto json = "[{\"actor_id\":1,\"from\":{\"i\":8,\"j\":2},\"gain\":1,\"hp\":1,"
-      "\"target_id\":2,\"to\":{\"i\":6,\"j\":2},\"type\":\"heal\"}]";
+  auto json = "[{\"actor_id\":1,\"gain\":1,\"target_id\":2,\"type\":\"heal\"}]";
   auto acts = Session::StrToActs(json);
   auto heal = static_cast<ActionHeal*>(acts[0].get());
   EXPECT_EQ(1, heal->actor_id);
   EXPECT_EQ(1, heal->gain);
-  ExpectPoint({8, 2}, heal->from);
-  EXPECT_EQ(1, heal->hp);
   EXPECT_EQ(2, heal->target_id);
-  ExpectPoint({6, 2}, heal->to);
   EXPECT_EQ(json, Session::ActsToStr(acts));
 }
 
