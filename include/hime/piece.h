@@ -105,6 +105,9 @@ class SessionPiece {
   }
   inline PieceAction action() const { return owned_->master()->action(); }
   inline Planet planet() const { return owned_->master()->planet(); }
+  inline const std::vector<Point>& range() const {
+    return owned_->master()->range();
+  }
 
  private:
   const std::shared_ptr<const OwnedPiece> owned_;

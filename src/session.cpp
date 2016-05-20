@@ -5,14 +5,17 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <exception>
 
 using std::unordered_map;
 using std::make_unique;
 using std::pair;
 using std::shared_ptr;
 using std::string;
+using std::to_string;
 using std::unique_ptr;
 using std::vector;
+using std::invalid_argument;
 
 NS_HIME_BEGIN
 
@@ -88,8 +91,23 @@ vector<unique_ptr<Action>> Session::ProcessTurn(
     const vector<Command>& commands) {
   vector<unique_ptr<Action>> acts;
   for (auto cmd : commands) {
-    if (pieces_.size() <= static_cast<size_t>(cmd.piece_id)) continue;
+    if (pieces_.size() <= static_cast<size_t>(cmd.piece_id)
+        || cmd.piece_id < 0) {
+      throw invalid_argument("invalid piece_id: " + to_string(cmd.piece_id));
+    }
+    if (board_.IsOutOfBounce(cmd.to)) {
+      throw invalid_argument("point out of bounce: "
+          + cmd.to.ToPicoValue().serialize());
+    }
     auto& actor = pieces_[cmd.piece_id];
+    bool validRange = false;
+    for (auto dir : actor->range()) {
+      validRange |= (actor->position() + dir) == cmd.to;
+    }
+    if (!validRange) {
+      throw invalid_argument("piece can not go to: "
+          + cmd.to.ToPicoValue().serialize());
+    }
     auto e = ApplyDir(cmd.piece_id, cmd.to - actor->position());
     acts.insert(acts.end(),
         make_move_iterator(e.begin()), make_move_iterator(e.end()));

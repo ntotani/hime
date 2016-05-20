@@ -1,4 +1,5 @@
 #include <vector>
+#include <exception>
 
 #include "gtest/gtest.h"
 
@@ -10,6 +11,7 @@ using std::make_unique;
 using std::shared_ptr;
 using std::unique_ptr;
 using std::vector;
+using std::invalid_argument;
 using hime::Action;
 using hime::ActionChip;
 using hime::ActionMove;
@@ -159,8 +161,30 @@ TEST_F(SessionTest, ProcessTurn) {
 
 TEST_F(SessionTest, ProcessTurnInvalid) {
   s_->CommitFormation({{"a", {4, 2}}});
-  auto acts = s_->ProcessTurn({{100, {2, 2}}});
-  EXPECT_EQ(0, acts.size());
+  try {
+    s_->ProcessTurn({{100, {2, 2}}});
+    FAIL();
+  } catch (const invalid_argument& e) {
+    EXPECT_STREQ("invalid piece_id: 100", e.what());
+  }
+  try {
+    s_->ProcessTurn({{-1, {2, 2}}});
+    FAIL();
+  } catch (const invalid_argument& e) {
+    EXPECT_STREQ("invalid piece_id: -1", e.what());
+  }
+  try {
+    s_->ProcessTurn({{0, {100, 2}}});
+    FAIL();
+  } catch (const invalid_argument& e) {
+    EXPECT_STREQ("point out of bounce: {\"i\":100,\"j\":2}", e.what());
+  }
+  try {
+    s_->ProcessTurn({{0, {0, 2}}});
+    FAIL();
+  } catch (const invalid_argument& e) {
+    EXPECT_STREQ("piece can not go to: {\"i\":0,\"j\":2}", e.what());
+  }
 }
 
 TEST_F(SessionTest, FindPiece) {
@@ -182,26 +206,6 @@ TEST_F(SessionTest, CalcDamageInvalid) {
 TEST_F(SessionTest, RotateDir) {
   ExpectPoint({2, 0}, s_->RotateDir({-2, 0}, 1));
   ExpectPoint({1, -1}, s_->RotateDir({-1, 1}, 1));
-}
-
-TEST_F(SessionTest, ProcessTurnOb) {
-  s_->CommitFormation({{"a", {0, 2}}});
-  auto acts = s_->ProcessTurn({{0, {-2, 2}}});
-  EXPECT_EQ(2, acts.size());
-  auto act = unique_ptr<ActionOb>(
-      static_cast<ActionOb*>(acts[0].release()));
-  EXPECT_EQ(Action::Type::kOb, act->type);
-  ExpectPoint({-2, 2}, act->pos);
-  EXPECT_EQ("{\"actor_id\":0,\"pos\":{\"i\":-2,\"j\":2},\"type\":\"ob\"}",
-      act->ToPicoValue().serialize());
-  auto &p = s_->pieces()[0];
-  EXPECT_EQ(0, p->hp());
-  auto drop = unique_ptr<ActionDrop>(
-      static_cast<ActionDrop*>(acts[1].release()));
-  EXPECT_EQ(Action::Type::kDrop, drop->type);
-  EXPECT_EQ(0, drop->team_id);
-  EXPECT_EQ("{\"team_id\":0,\"type\":\"drop\"}",
-      drop->ToPicoValue().serialize());
 }
 
 TEST_F(SessionTest, ProcessTurnAttack) {
@@ -248,16 +252,6 @@ class SessionHimeTest : public HimeTest {
   }
   Session* s_;
 };
-
-TEST_F(SessionHimeTest, Drop) {
-  s_->CommitFormation({{"a", {0, 2}}});
-  auto acts = s_->ProcessTurn({{0, {-2, 2}}});
-  EXPECT_EQ(2, acts.size());
-  auto act = unique_ptr<ActionDrop>(
-      static_cast<ActionDrop*>(acts[1].release()));
-  EXPECT_EQ(Action::Type::kDrop, act->type);
-  EXPECT_EQ(0, act->team_id);
-}
 
 TEST_F(SessionHimeTest, Camp) {
   s_->CommitFormation({{"a", {2, 2}}});
