@@ -2,6 +2,7 @@
 #define INCLUDE_HIME_PIECE_H_
 
 #include <string>
+#include <vector>
 #include <utility>
 #include <memory>
 
@@ -28,13 +29,14 @@ class MasterPiece {
   MasterPiece(const std::string &id, const std::string &name,
       Planet planet, PieceAction action,
       std::shared_ptr<const Skill> passive_skill,
-      Parameter param)
+      Parameter param, const std::vector<Point> &range)
       :id_(id),
       name_(name),
       planet_(planet),
       action_(action),
       passive_skill_(passive_skill),
-      param_(param) {
+      param_(param),
+      range_(range) {
   }
   inline const std::string& id() const { return id_; }
   inline const std::string& name() const { return name_; }
@@ -43,6 +45,7 @@ class MasterPiece {
   inline std::shared_ptr<const Skill> passive_skill() const {
       return passive_skill_; }
   inline Parameter param() const { return param_; }
+  inline const std::vector<Point>& range() const { return range_; }
 
  private:
   const std::string id_;
@@ -51,6 +54,7 @@ class MasterPiece {
   const PieceAction action_;
   const std::shared_ptr<const Skill> passive_skill_;
   const Parameter param_;
+  const std::vector<Point> range_;
   DISALLOW_COPY_AND_ASSIGN(MasterPiece);
 };
 

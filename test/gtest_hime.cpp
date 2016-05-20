@@ -41,25 +41,14 @@ class HimeEnv : public testing::Environment {
       "p0,dummy,dummy skill,0\n"
       "p1,癒やし,周りの駒が毎ターン@ずつ回復する,30\n"
       "p3,一矢,この駒を倒した相手に攻撃する,0");
-    master.LoadPiece("0,dummy,mar,phys,p0,40,40,40\n"
-        "1,姫,sun,heal,p1,60,50,80\n"
-        "3,浪人,mar,phys,p3,80,80,60");
+    master.LoadPiece("0,dummy,mar,phys,p0,40,40,40,abcf\n"
+        "1,姫,sun,heal,p1,60,50,80,abcf\n"
+        "3,浪人,mar,phys,p3,80,80,60,abcf");
   }
   hime::Master master;
 };
 HimeEnv* env = static_cast<HimeEnv*>(
     testing::AddGlobalTestEnvironment(new HimeEnv));
-
-class PieceTest : public testing::Test {};
-
-TEST_F(PieceTest, Constructor) {
-  EXPECT_EQ("姫", env->master.piece("1")->name());
-}
-
-class SessionContextStub : public SessionContext {
- public:
-  int random() { return 0; }
-};
 
 class HimeTest : public testing::Test {
  protected:
@@ -67,6 +56,34 @@ class HimeTest : public testing::Test {
     EXPECT_EQ(a.i, b.i);
     EXPECT_EQ(a.j, b.j);
   }
+};
+
+class PieceTest : public HimeTest {};
+
+TEST_F(PieceTest, Constructor) {
+  auto mp = env->master.piece("0");
+  EXPECT_EQ("0", mp->id());
+  EXPECT_EQ("dummy", mp->name());
+  EXPECT_EQ(Planet::kMars, mp->planet());
+  EXPECT_EQ(PieceAction::kPhysical, mp->action());
+  EXPECT_EQ(40, mp->param().power);
+  EXPECT_EQ(40, mp->param().defense);
+  EXPECT_EQ(40, mp->param().resist);
+  auto range = mp->range();
+  ExpectPoint({-2, 0}, range[0]);
+  ExpectPoint({-1, 1}, range[1]);
+  ExpectPoint({-1, -1}, range[2]);
+  ExpectPoint({2, 0}, range[3]);
+  auto ps = mp->passive_skill();
+  EXPECT_EQ("p0", ps->id());
+  EXPECT_EQ("dummy", ps->name());
+  EXPECT_EQ("dummy skill", ps->desc());
+  EXPECT_EQ(0, ps->rate());
+}
+
+class SessionContextStub : public SessionContext {
+ public:
+  int random() { return 0; }
 };
 
 class SessionTest : public HimeTest {
