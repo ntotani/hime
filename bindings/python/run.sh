@@ -12,6 +12,6 @@ fi
 if [ "$2" = "python" ]; then
     $BIN_PATH test.py
 else
-    g++ -shared -o hime.so -std=c++1y -lboost_python -lpython2.7 -I../../include -I$USR_PATH/include/python2.7 -DPIC -fPIC -O ../../src/master.cpp ../../src/session.cpp ../../src/board.cpp ../../src/action.cpp hime.cpp && $BIN_PATH test.py
+    g++ -shared -o hime.so -std=c++1y -lboost_python -lpython2.7 -I../../include -I$USR_PATH/include/python2.7 -DPIC -fPIC ../../src/master.cpp ../../src/session.cpp ../../src/board.cpp ../../src/action.cpp hime.cpp && $BIN_PATH test.py
 fi
 
