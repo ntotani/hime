@@ -18,6 +18,7 @@ using hime::ActionMove;
 using hime::ActionOb;
 using hime::ActionAttack;
 using hime::ActionHeal;
+using hime::ActionDead;
 using hime::ActionDrop;
 using hime::MasterPiece;
 using hime::OwnedPiece;
@@ -259,11 +260,15 @@ TEST_F(SessionHimeTest, HimeDead) {
       {"a", {{8, 2},   1, Parameter(100)}},
       {"b", {{6, 2}, 100, Parameter(100)}}});
   auto acts = s_->ProcessTurn({{1, {8, 2}}});
-  EXPECT_EQ(2, acts.size());
-  auto act = unique_ptr<ActionDrop>(
-      static_cast<ActionDrop*>(acts[1].release()));
-  EXPECT_EQ(Action::Type::kDrop, act->type);
-  EXPECT_EQ(0, act->team_id);
+  EXPECT_EQ(3, acts.size());
+  auto dead = unique_ptr<ActionDead>(
+      static_cast<ActionDead*>(acts[1].release()));
+  EXPECT_EQ(Action::Type::kDead, dead->type);
+  EXPECT_EQ(0, dead->actor_id);
+  auto drop = unique_ptr<ActionDrop>(
+      static_cast<ActionDrop*>(acts[2].release()));
+  EXPECT_EQ(Action::Type::kDrop, drop->type);
+  EXPECT_EQ(0, drop->team_id);
 }
 
 TEST_F(SessionHimeTest, HimeHeal) {
@@ -349,6 +354,14 @@ TEST_F(SessionStringifyTest, ActionHeal) {
   EXPECT_EQ(1, heal->actor_id);
   EXPECT_EQ(1, heal->gain);
   EXPECT_EQ(2, heal->target_id);
+  EXPECT_EQ(json, Session::ActsToStr(acts));
+}
+
+TEST_F(SessionStringifyTest, ActionDead) {
+  auto json = "[{\"actor_id\":1,\"type\":\"dead\"}]";
+  auto acts = Session::StrToActs(json);
+  auto dead = static_cast<ActionDead*>(acts[0].get());
+  EXPECT_EQ(1, dead->actor_id);
   EXPECT_EQ(json, Session::ActsToStr(acts));
 }
 

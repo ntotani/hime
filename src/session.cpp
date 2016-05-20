@@ -350,6 +350,7 @@ vector<unique_ptr<Action>> Session::Attack(
   acts.push_back(make_unique<ActionAttack>(actor_id, target_id, damage));
   pieces_[target_id]->hp_ = std::max(pieces_[target_id]->hp() - damage, 0);
   if (pieces_[target_id]->hp() <= 0) {
+    acts.push_back(make_unique<ActionDead>(target_id));
     if (IsDrop(pieces_[target_id]->team())) {
       acts.push_back(make_unique<ActionDrop>(pieces_[target_id]->team()));
     }

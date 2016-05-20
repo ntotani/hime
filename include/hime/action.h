@@ -15,6 +15,7 @@ struct Action {
     kOb,
     kAttack,
     kHeal,
+    kDead,
     kPskill,
     kEvo,
     kDrop,
@@ -73,6 +74,12 @@ struct ActionHeal : public Action {
   ActionHeal(int actor_id, int target_id, int gain)
       :Action(Type::kHeal), actor_id(actor_id),
       target_id(target_id), gain(gain) {}
+  picojson::value ToPicoValue() const override;
+};
+
+struct ActionDead : public Action {
+  const int actor_id;
+  explicit ActionDead(int actor_id):Action(Type::kDead), actor_id(actor_id) {}
   picojson::value ToPicoValue() const override;
 };
 

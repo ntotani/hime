@@ -54,6 +54,13 @@ value ActionHeal::ToPicoValue() const {
   return move(value(obj));
 }
 
+value ActionDead::ToPicoValue() const {
+  object obj;
+  obj["type"]      = value("dead");
+  obj["actor_id"]  = value(static_cast<double>(actor_id));
+  return move(value(obj));
+}
+
 value ActionDrop::ToPicoValue() const {
   object obj;
   obj["type"]    = value("drop");
@@ -86,6 +93,9 @@ unique_ptr<Action> Action::FromPicoValue(const value& val) {
     int target_id = static_cast<int>(obj["target_id"].get<double>());
     int gain = static_cast<int>(obj["gain"].get<double>());
     return make_unique<ActionHeal>(actor_id, target_id, gain);
+  } else if (type == "dead") {
+    int actor_id = static_cast<int>(obj["actor_id"].get<double>());
+    return make_unique<ActionDead>(actor_id);
   } else if (type == "drop") {
     int team_id = static_cast<int>(obj["team_id"].get<double>());
     return make_unique<ActionDrop>(team_id);
