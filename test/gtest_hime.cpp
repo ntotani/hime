@@ -41,9 +41,9 @@ class HimeEnv : public testing::Environment {
       "p0,dummy,dummy skill,0\n"
       "p1,癒やし,周りの駒が毎ターン@ずつ回復する,30\n"
       "p3,一矢,この駒を倒した相手に攻撃する,0");
-    master.LoadPiece("0,dummy,mar,phys,a0,p0,40,40,40\n"
-        "1,姫,sun,heal,a1,p1,60,50,80\n"
-        "3,浪人,mar,phys,a3,p3,80,80,60");
+    master.LoadPiece("0,dummy,mar,phys,p0,40,40,40\n"
+        "1,姫,sun,heal,p1,60,50,80\n"
+        "3,浪人,mar,phys,p3,80,80,60");
   }
   hime::Master master;
 };

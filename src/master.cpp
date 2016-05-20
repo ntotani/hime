@@ -13,9 +13,8 @@ void Master::LoadPiece(string csv) {
   for (auto& row : Split(csv, "\n")) {
     auto cols = Split(row, ",");
     piece_[cols[0]] = make_shared<const MasterPiece>(cols[0], cols[1],
-      kPlanetStr.at(cols[2]), kPieceActionStr.at(cols[3]),
-      skill_[cols[4]], skill_[cols[5]],
-      hime::Parameter(stoi(cols[6]), stoi(cols[7]), stoi(cols[8])));
+      kPlanetStr.at(cols[2]), kPieceActionStr.at(cols[3]), skill_[cols[4]],
+      hime::Parameter(stoi(cols[5]), stoi(cols[6]), stoi(cols[7])));
   }
 }
 

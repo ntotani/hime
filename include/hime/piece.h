@@ -27,14 +27,12 @@ class MasterPiece {
  public:
   MasterPiece(const std::string &id, const std::string &name,
       Planet planet, PieceAction action,
-      std::shared_ptr<const Skill> active_skill,
       std::shared_ptr<const Skill> passive_skill,
       Parameter param)
       :id_(id),
       name_(name),
       planet_(planet),
       action_(action),
-      active_skill_(active_skill),
       passive_skill_(passive_skill),
       param_(param) {
   }
@@ -42,8 +40,6 @@ class MasterPiece {
   inline const std::string& name() const { return name_; }
   inline Planet planet() const { return planet_; }
   inline PieceAction action() const { return action_; }
-  inline std::shared_ptr<const Skill> active_skill() const {
-      return active_skill_; }
   inline std::shared_ptr<const Skill> passive_skill() const {
       return passive_skill_; }
   inline Parameter param() const { return param_; }
@@ -53,7 +49,6 @@ class MasterPiece {
   const std::string name_;
   const Planet planet_;
   const PieceAction action_;
-  const std::shared_ptr<const Skill> active_skill_;
   const std::shared_ptr<const Skill> passive_skill_;
   const Parameter param_;
   DISALLOW_COPY_AND_ASSIGN(MasterPiece);
