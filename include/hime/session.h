@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <stack>
 #include <memory>
 
 #include "hime/action.h"
@@ -73,16 +74,19 @@ class Session {
 
  private:
   void DrawCard();
-  std::vector<std::unique_ptr<Action>> ApplyDir(int piece_id, Point dir);
-  std::vector<std::unique_ptr<Action>> TryMove(int piece_id, Point position);
-  std::vector<std::unique_ptr<Action>> CommitMove(int piece_id, Point position);
+  bool PreAction(const std::unique_ptr<Action>& action,
+      std::stack<std::unique_ptr<Action>>* resolve);
+  void PostAction(const std::unique_ptr<Action>& action,
+      std::stack<std::unique_ptr<Action>>* resolve);
   std::vector<Point> Card2Dirs(Card card);
-  std::vector<std::unique_ptr<Action>> Attack(int actor_id, int target_id);
-  std::vector<std::unique_ptr<Action>> Attack(
-      int actor_id, int target_id, int damage);
-  std::vector<std::unique_ptr<Action>> Heal(int actor_id, int target_id);
-  std::vector<std::unique_ptr<Action>> Heal(
-      int actor_id, int target_id, int gain);
+  void Attack(int actor_id, int target_id,
+      std::stack<std::unique_ptr<Action>>* resolve);
+  void Attack(int actor_id, int target_id, int damage,
+      std::stack<std::unique_ptr<Action>>* resolve);
+  void Heal(int actor_id, int target_id,
+      std::stack<std::unique_ptr<Action>>* resolve);
+  void Heal(int actor_id, int target_id, int gain,
+      std::stack<std::unique_ptr<Action>>* resolve);
 
   const int player_num_;
   const std::vector<std::vector<std::shared_ptr<const OwnedPiece>>>
