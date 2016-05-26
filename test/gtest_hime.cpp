@@ -12,6 +12,7 @@ using std::shared_ptr;
 using std::unique_ptr;
 using std::vector;
 using std::invalid_argument;
+using std::domain_error;
 using hime::Action;
 using hime::ActionChip;
 using hime::ActionMove;
@@ -159,6 +160,12 @@ TEST_F(SessionTest, ProcessTurn) {
 }
 
 TEST_F(SessionTest, ProcessTurnInvalid) {
+  try {
+    s_->ProcessTurn({{0, {2, 2}}});
+    FAIL();
+  } catch (const domain_error& e) {
+    EXPECT_STREQ("cant ProcessTurn before CommitFormation", e.what());
+  }
   s_->CommitFormation({{"a", {4, 2}}});
   try {
     s_->ProcessTurn({{100, {2, 2}}});

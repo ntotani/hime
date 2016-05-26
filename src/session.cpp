@@ -18,6 +18,7 @@ using std::unique_ptr;
 using std::vector;
 using std::stack;
 using std::invalid_argument;
+using std::domain_error;
 
 NS_HIME_BEGIN
 
@@ -92,6 +93,9 @@ bool Session::CommitFormation(
 vector<unique_ptr<Action>> Session::ProcessTurn(
     const vector<Command>& commands) {
   stack<unique_ptr<Action>> resolve;
+  if (pieces_.size() <= 0) {
+    throw domain_error("cant ProcessTurn before CommitFormation");
+  }
   for (auto it = commands.rbegin(); it != commands.rend(); it++) {
     auto cmd = *it;
     if (pieces_.size() <= static_cast<size_t>(cmd.piece_id)
