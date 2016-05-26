@@ -186,6 +186,16 @@ TEST_F(SessionTest, ProcessTurnInvalid) {
   }
 }
 
+TEST_F(SessionTest, ProcessTurnInvalidDead) {
+  s_->CommitFormation({{"a", {{4, 2}, 0, Parameter(0)}}});
+  try {
+    s_->ProcessTurn({{0, {2, 2}}});
+    FAIL();
+  } catch (const invalid_argument& e) {
+    EXPECT_STREQ("dead piece_id: 0", e.what());
+  }
+}
+
 TEST_F(SessionTest, FindPiece) {
   s_->CommitFormation({{"a", {4, 2}}});
   EXPECT_EQ(0, s_->FindPiece({4, 2}));

@@ -103,6 +103,9 @@ vector<unique_ptr<Action>> Session::ProcessTurn(
           + cmd.to.ToPicoValue().serialize());
     }
     auto& actor = pieces_[cmd.piece_id];
+    if (actor->hp() <= 0) {
+      throw invalid_argument("dead piece_id: " + to_string(cmd.piece_id));
+    }
     bool validRange = false;
     for (auto dir : actor->range()) {
       validRange |= (actor->position() + dir) == cmd.to;
