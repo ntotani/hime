@@ -3,10 +3,12 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <memory>
 
 using std::string;
 using std::vector;
 using std::unordered_map;
+using std::shared_ptr;
 using std::make_shared;
 
 NS_HIME_BEGIN
@@ -15,6 +17,11 @@ const unordered_map<char, Point> kDirCodes = {
   {'a', {-2, 0}}, {'b', {-1,  1}}, {'c', {-1, -1}},
   {'d', { 1, 1}}, {'e', { 1, -1}}, {'f', { 2,  0}}
 };
+
+const unordered_map<string, shared_ptr<SkillEffect>> kSkillEffectIds = {
+  {"3", make_shared<SkillRevenge>()}
+};
+const shared_ptr<SkillEffect> kEmptySkillEffect = make_shared<SkillEffect>();
 
 void Master::LoadPiece(string csv) {
   for (auto& row : Split(csv, "\n")) {
@@ -40,8 +47,13 @@ void Master::LoadPiece(string csv) {
 void Master::LoadSkill(string csv) {
   for (auto& row : Split(csv, "\n")) {
     auto cols = Split(row, ",");
-    skill_[cols[0]] = make_shared<const Skill>(
-      cols[0], cols[1], cols[2], stoi(cols[3]));
+    auto id   = cols[0];
+    auto name = cols[1];
+    auto desc = cols[2];
+    auto effect = kSkillEffectIds.count(id) != 0
+      ? kSkillEffectIds.at(id)
+      : kEmptySkillEffect;
+    skill_[id] = make_shared<const Skill>(id, name, desc, effect);
   }
 }
 

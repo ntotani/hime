@@ -33,6 +33,8 @@ class SessionContextImpl : public SessionContext {
 };
 
 class Session {
+  friend Skill;
+
  public:
   struct Command {
     const int piece_id;

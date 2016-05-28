@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "hime/piece.h"
+#include "hime/skill.h"
 
 NS_HIME_BEGIN
 

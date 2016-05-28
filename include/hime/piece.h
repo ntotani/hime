@@ -10,6 +10,8 @@
 
 NS_HIME_BEGIN
 
+class Skill;
+
 struct Parameter {
   const int power, defense, resist;
   explicit Parameter(int value)

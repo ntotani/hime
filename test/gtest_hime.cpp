@@ -39,12 +39,12 @@ namespace {
 class HimeEnv : public testing::Environment {
  public:
   virtual void SetUp() {
-    master.LoadSkill("a0,dummy,dummy skill,0\n"
-      "a1,全体回復,味方全員を@回復する,30\n"
-      "a3,突撃,攻撃力2倍で2マス前進,0\n"
-      "p0,dummy,dummy skill,0\n"
-      "p1,癒やし,周りの駒が毎ターン@ずつ回復する,30\n"
-      "p3,一矢,この駒を倒した相手に攻撃する,0");
+    master.LoadSkill("a0,dummy,dummy skill\n"
+      "a1,全体回復,味方全員を@回復する\n"
+      "a3,突撃,攻撃力2倍で2マス前進\n"
+      "p0,dummy,dummy skill\n"
+      "p1,癒やし,周りの駒が毎ターン@ずつ回復する\n"
+      "p3,一矢,この駒を倒した相手に攻撃する");
     master.LoadPiece("0,dummy,mar,phys,p0,40,40,40,abcf\n"
         "1,姫,sun,heal,p1,60,50,80,abcf\n"
         "3,浪人,mar,phys,p3,80,80,60,abcf");
@@ -82,7 +82,6 @@ TEST_F(PieceTest, Constructor) {
   EXPECT_EQ("p0", ps->id());
   EXPECT_EQ("dummy", ps->name());
   EXPECT_EQ("dummy skill", ps->desc());
-  EXPECT_EQ(0, ps->rate());
 }
 
 class SessionContextStub : public SessionContext {
